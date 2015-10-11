@@ -1,0 +1,55 @@
+{% extends "base_listing.html" %}
+{% load crispy_forms_tags %}
+
+{% block bodylisting_block %}
+{% for key in form.errors %}
+<div class="alert alert-danger">
+	Error in Field "{{ key|capfirst }}":
+	{{ form.errors|get_item:key }}
+
+</div>
+
+{% endfor %}
+
+<h2 class="sub-header">Ingredients for {{ receipe.name }} ({{ receipe.default_person_count }} pers)</h2>
+<div class="table-responsive">
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th>Name</th>
+			<th>Amount</th>
+			<th>Remarks</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for rec in receipe_ingredient_list %}
+			<tr class="{% cycle 'odd' 'even' %}">
+				<td><a href="{% url "cooking:ingredients" rec.ingredient.id %}">{{ rec.ingredient.name }}</a></td>
+				
+				{% if rec.measurement == 'n' %}
+				<td>{{ rec.amount|floatformat }} piece{{ rec.amount|pluralize }}</td>
+				{% else %}
+				<td>{{ rec.amount|floatformat }}{{ rec.measurement }}</td>
+				{% endif %}
+				
+				<td>{{ rec.remarks }}</td>
+				
+				<td><a href="{{ request.path|urlencode }}?remove_receipe_ingredient={{ rec.id }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Remove ingredient {{ rec.ingredient.name }} from {{ receipe.name }}"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span><span class="sr-only">Del</span></a></td>
+			</tr>		
+		{% endfor %}
+		<tr>
+			
+			{% crispy form %}
+
+		</tr>
+		</tbody>
+	</table>
+</div>
+
+<h2 class="sub-header">Instructions for {{ receipe.name }} ({{ receipe.default_person_count }} pers)</h2>
+<div class="well">
+  {{ receipe.instructions }}
+</div>
+
+{% endblock %}

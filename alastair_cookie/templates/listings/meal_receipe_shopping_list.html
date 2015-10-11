@@ -1,0 +1,10 @@
+{% extends "listings/shopping_list.html" %}
+
+{% block heading_block %}Shopping List for Receipe "{{ receipe.name }}" in Meal "{{ meal.name }}" {% endblock %}
+
+{% block instructions_block %}
+<h2 class="sub-header">Instructions</h2>
+<div class="well">
+	{{ receipe.instructions }}
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base_listing.html" %}
+{% load crispy_forms_tags %}
+
+{% block bodylisting_block %}
+{% for key in form.errors %}
+<div class="alert alert-danger">
+	Error in Field "{{ key|capfirst }}":
+	{{ form.errors|get_item:key }}
+
+</div>
+
+{% endfor %}
+
+<h2 class="sub-header">Already bought ingredients, will be excluded from Shopping List</h2>
+<div class="table-responsive">
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th>Name</th>
+			<th>Amount</th>
+			<th>Price</th>
+			<th>Remarks</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for ing in ingredient_list %}
+			<tr>
+				<td><a href="{% url "cooking:ingredients" ing.ingredient.id %}">{{ ing.ingredient.name }}</a></td>
+				
+				{% if ing.measurement == 'n' %}
+				<td>{{ ing.amount|floatformat }} piece{{ ing.amount|pluralize }}</td>
+				{% else %}
+				<td>{{ ing.amount|floatformat }}{{ ing.measurement }}</td>
+				{% endif %}
+				
+				<td>{{ ing.exact_price|floatformat:2 }}€</td>
+				
+				<td>{{ ing.remarks }}</td>
+				
+				<td><a href="{{ request.path|urlencode }}?remove_inventory_ingredient={{ ing.id }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Remove ingredient {{ ing.ingredient.name }} from inventory"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span><span class="sr-only">Del</span></a></td>
+			</tr>		
+		{% endfor %}
+		<tr>
+			
+			{% crispy form %}
+
+		</tr>
+		</tbody>
+	</table>
+</div>
+
+{% endblock %}

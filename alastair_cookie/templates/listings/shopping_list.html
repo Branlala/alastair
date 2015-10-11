@@ -1,0 +1,67 @@
+{% extends "base_listing.html" %}
+
+{% block bodylisting_block %}<h2 class="sub-header">{% block heading_block %}Shopping List <a href="{% url 'cooking:shoppinglistcsv' %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Download as .csv"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span><span class="sr-only">Download</span></a>{% endblock %}</h2>
+<div class="table-responsive">
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th>Ingredient</th>
+			<th>Exact Amount</th>
+			<th>Effective Amount</th>
+			<th>Effective Price</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for ing in shopping_list %}
+			<tr class="{% cycle 'odd' 'even' %}">
+				<td><a href="#">{{ ing.name }}</a></td>
+				
+				{% if ing.buying_measurement == 'n' %}
+				<td>{{ ing.exact_amount|floatformat }} piece{{ ing.buying_quantity|pluralize }}
+				{% else %}
+				<td>{{ ing.exact_amount|floatformat }}{{ ing.buying_measurement }}
+				{% endif %}
+				
+				{% if ing.calculation_measurement %}
+				or
+					{% if ing.calculation_measurement == 'n' %}
+						{{ ing.exact_calculation_amount|floatformat }} piece{{ ing.exact_calculation_amount|pluralize }}
+					{% else %}
+						{{ ing.exact_calculation_amount|floatformat }}{{ ing.calculation_measurement }}
+					{% endif %}
+				
+				{% endif %}
+				</td>
+				
+				
+				{% if ing.buying_measurement == 'n' %}
+				<td>{{ ing.effective_amount|floatformat }} piece{{ ing.buying_quantity|pluralize }}
+				{% else %}
+				<td>{{ ing.effective_amount|floatformat }}{{ ing.buying_measurement }}
+				{% endif %}
+				
+				{% if ing.calculation_measurement %}
+				or
+					{% if ing.calculation_measurement == 'n' %}
+						{{ ing.effective_calculation_amount|floatformat }} piece{{ ing.effective_calculation_amount|pluralize }}
+					{% else %}
+						{{ ing.effective_calculation_amount|floatformat }}{{ ing.calculation_measurement }}
+					{% endif %}
+				
+				{% endif %}
+				
+				 ({{ ing.buying_count|floatformat }} item{{ ing.buying_count|pluralize }})</td>
+				<td>{{ ing.effective_price|floatformat:2 }}€</td>
+			</tr>		
+		{% endfor %}
+		<tr>
+			<td>Total</td><td></td>
+			<!--<td>exact price {{ total_exact_price|floatformat:2 }}€</td>--><td></td>
+			<td>{{ total_effective_price|floatformat:2 }}€</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+
+{% block instructions_block %}{% endblock %}
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base_listing.html" %}
+{% load crispy_forms_tags %}
+
+{% block bodylisting_block %}
+{% for key in form.errors %}
+<div class="alert alert-danger">
+	Error in Field "{{ key|title }}":
+	{{ form.errors|get_item:key }}
+
+</div>
+{% endfor %}
+
+<h2 class="sub-header">Used receipes in meal {{ meal.name }}</h2>
+<div class="table-responsive">
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th>Receipe</th>
+			<th>Person Count</th>
+			<th>Remarks</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for rec in meal_receipe_list %}
+			<tr>
+				<td><a href="{% url 'cooking:meals' meal.id rec.receipe.id %}">{{ rec.receipe.name }}</a></td>
+				
+				<td>{{ rec.person_count }}</td>
+				
+				<td>{{ rec.remarks }}</td>
+				
+				<td>
+					<a href="{{ request.path|urlencode }}?remove_meal_receipe={{ rec.id }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span><span class="sr-only">Del</span></a>
+					<a href="{% url "cooking:receipes" rec.receipe.id %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="View and edit ingredients of receipe {{ rec.receipe.name }}"><span class="glyphicon glyphicon-list" aria-hidden="true"></span><span class="sr-only">Info</span></a>
+					<a href="{% url 'cooking:meals' meal.id rec.receipe.id %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="View a shopping list of only this receipe"><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span><span class="sr-only">Info</span></a>
+					
+				</td>
+			</tr>		
+		{% endfor %}
+		<tr>
+			
+			{% crispy form %}
+
+		</tr>
+		</tbody>
+	</table>
+</div>
+
+{% endblock %}

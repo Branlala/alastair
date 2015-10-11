@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block body_block %}
+{% if login_failed %}
+<div class="alert alert-danger">
+Login failed! Did you enter your correct password and username?
+</div>
+
+{% endif %}
+<div>
+	<h1 class="heading">Login</h1>
+	{% crispy form %}
+</div>
+{% endblock %}

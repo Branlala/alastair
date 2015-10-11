@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+
+{% block body_block %}
+<div class="col-lg-5 col-lg-offset-4">
+	{% if message %}
+	<div class="row"><div class="alert alert-success">{{ message }}</div></div>
+	{% endif %}
+	<div class="row"><div class="col-lg-6 col-lg-offset-3"><h1 class="heading">{% firstof heading 'Login' %}</h1></div></div>
+	<div class="row">
+	{% if form %}
+		{% crispy form %}
+	{% endif %}
+	</div>
+</div>
+{% endblock %}

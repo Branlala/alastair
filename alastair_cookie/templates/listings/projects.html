@@ -1,0 +1,40 @@
+{% extends "base_listing.html" %}
+
+{% block bodylisting_block %}<h2 class="sub-header">Projects</h2>
+<div class="table-responsive">
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th>Name</th>
+			<th>Starting</th>
+			<th>Ending</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for proj in project_list %}
+			<tr class="{% cycle 'odd' 'even' %}">
+				<td><a href="{% url 'cooking:meals' %}?activate_project={{ proj.id }}">{{ proj.name }}{% if proj == active_project %} (active){% endif %}</a></td>
+				<td>{{ proj.start_date }}</td>
+				<td>{{ proj.end_date }}</td>
+				<td>
+					<a href="{% url 'cooking:delproject' proj.id %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Delete project {{ proj.name }}"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span><span class="sr-only">Del</span></a>
+					<a href="{% url 'cooking:editproject' proj.id %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Edit project {{ proj.name }}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span><span class="sr-only">Edit</span></a>
+					{% if proj == active_project %}
+					<a href="{% url 'cooking:projects' %}?activate_project=none" class="btn btn-default btn-sm" data-toggle="tooltip" title="Deactivate project {{ proj.name }}"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span><span class="sr-only">Deactivate</span></a>
+					{% else %}
+					<a href="{% url 'cooking:projects' %}?activate_project={{ proj.id }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Activate project {{ proj.name }}"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span><span class="sr-only">Activate</span></a>
+					{% endif %}
+				</td>
+			</tr>		
+		{% endfor %}
+		<tr>
+			<td></td><td></td><td></td>
+			<td>
+				<a href="{% url 'cooking:newproject' %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Add a new project"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span><span class="sr-only">Add</span></a>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+{% endblock %}

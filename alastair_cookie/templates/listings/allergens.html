@@ -1,0 +1,26 @@
+{% extends "base_listing.html" %}
+
+{% block bodylisting_block %}
+<div class="alert alert-warning">
+Editing of Allergens and the listing of Allergens in a receipe is not yet supported, because the site developer, <a href="https://www.facebook.com/profile.php?id=100006184516026">DresDino</a>, decided to make Lental Soup instead. 
+Still it could be a good idea to add allergens to ingredients already, as he might finish the soup soon.
+</div>
+
+<h2 class="sub-header">Known Allergens</h2>
+<div class="table-responsive">
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th>Name</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for allergen in allergen_list %}
+			<tr>
+				<td><a href="#">{{ allergen.name }}</a></td>
+			</tr>		
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

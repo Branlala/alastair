@@ -1,0 +1,13 @@
+{% extends "base_listing.html" %}
+{% load crispy_forms_tags %}
+
+{% block bodyform_block %}
+
+	<div class="row placeholders">
+		<h2 class="sub-header">Really delete {% firstof object.name objectname %} ?</h2>
+		{% crispy form %}
+	</div>
+
+{% endblock %}
+
+{% block bodylisting_block %}{% endblock %}
