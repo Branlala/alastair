@@ -1,8 +1,7 @@
-import csv, codecs, cStringIO
+import csv, codecs
 from django.core.urlresolvers import resolve
 from django.template.defaulttags import register
 from .models import Project
-
 
 @register.filter(name='get_item')
 def get_item(dictionary, key):
@@ -28,37 +27,43 @@ def prepareContext(request):
 	context['pagetitle'] = context['active_page']
 	return context
 
-def _smallhelpforunicode(arg):
-	if(arg == None):
-		return ''
-	return unicode(arg)
+## Ugly thing: if we can import the python2-module, define stuff...
+try:
+	import cStringIO
+		
+	def _smallhelpforunicode(arg):
+		if(arg == None):
+			return ''
+		return unicode(arg)
 
 
-class UnicodeWriter:
-	"""
-	A CSV writer which will write rows to CSV file "f",
-	which is encoded in the given encoding.
-	"""
+	class UnicodeWriter:
+		"""
+		A CSV writer which will write rows to CSV file "f",
+		which is encoded in the given encoding.
+		"""
 
-	def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
-		# Redirect output to a queue
-		self.queue = cStringIO.StringIO()
-		self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
-		self.stream = f
-		self.encoder = codecs.getincrementalencoder(encoding)()
+		def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+			# Redirect output to a queue
+			self.queue = cStringIO.StringIO()
+			self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
+			self.stream = f
+			self.encoder = codecs.getincrementalencoder(encoding)()
 
-	def writerow(self, row):
-		self.writer.writerow([_smallhelpforunicode(s).encode("utf-8") for s in row])
-		# Fetch UTF-8 output from the queue ...
-		data = self.queue.getvalue()
-		data = data.decode("utf-8")
-		# ... and reencode it into the target encoding
-		data = self.encoder.encode(data)
-		# write to the target stream
-		self.stream.write(data)
-		# empty queue
-		self.queue.truncate(0)
+		def writerow(self, row):
+			self.writer.writerow([_smallhelpforunicode(s).encode("utf-8") for s in row])
+			# Fetch UTF-8 output from the queue ...
+			data = self.queue.getvalue()
+			data = data.decode("utf-8")
+			# ... and reencode it into the target encoding
+			data = self.encoder.encode(data)
+			# write to the target stream
+			self.stream.write(data)
+			# empty queue
+			self.queue.truncate(0)
 
-	def writerows(self, rows):
-		for row in rows:
-			self.writerow(row)
+		def writerows(self, rows):
+			for row in rows:
+				self.writerow(row)
+except:
+	pass

@@ -1,7 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from .helpers import UnicodeWriter, prepareContext
+from .helpers import prepareContext
+try:
+	from .helpers import UnicodeWriter
+except:
+	from csv import writer as UnicodeWriter
 from .models import Project_Shopping_List, Ingredient, Allergen, Meal, Meal_Receipe_Shopping_List
 
 def conv_measurement(measurement, quantity):
