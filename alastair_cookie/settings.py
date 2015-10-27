@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'alastair_cookie',
         'USER' : 'django',
-        'PASSWORD' : 'YNWQQfJynKZ3sjhQ',
+        'PASSWORD' : '',
     }
 }
 
