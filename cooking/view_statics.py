@@ -75,7 +75,7 @@ def list_receipe_ingredient(request, active_receipe):
 	rec = Receipe.objects.get(id=active_receipe)
 	form = Receipe_IngredientForm(request.POST or None)
 	if(form.is_valid()):
-		obj = form.save(Commit=False)
+		obj = form.save(commit=False)
 		obj.receipe = rec
 		obj.save()
 		form = Receipe_IngredientForm(None)

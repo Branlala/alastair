@@ -5,15 +5,18 @@
 	<table class="table table-striped">
 		<thead>
 		<tr>
+			<th>Used first</th>
 			<th>Ingredient</th>
 			<th>Exact Amount</th>
 			<th>Effective Amount</th>
-			<th>Effective Price</th>
+			<th>Remarks</th>
+			<th>Effective Price</th>			
 		</tr>
 		</thead>
 		<tbody>
 		{% for ing in shopping_list %}
 			<tr class="{% cycle 'odd' 'even' %}">
+				<td>{{ ing.first_occurrence|date:"d.M" }}</td>
 				<td><a href="#">{{ ing.name }}</a></td>
 				
 				{% if ing.buying_measurement == 'n' %}
@@ -51,12 +54,15 @@
 				{% endif %}
 				
 				 ({{ ing.buying_count|floatformat }} item{{ ing.buying_count|pluralize }})</td>
+				
+				<td>{{ ing.remarks }}</td>
+				 
 				<td>{{ ing.effective_price|floatformat:2 }}€</td>
 			</tr>		
 		{% endfor %}
 		<tr>
-			<td>Total</td><td></td>
-			<!--<td>exact price {{ total_exact_price|floatformat:2 }}€</td>--><td></td>
+			<td>Total</td><td></td><td></td>
+			<!--<td>exact price {{ total_exact_price|floatformat:2 }}€</td>--><td></td><td></td>
 			<td>{{ total_effective_price|floatformat:2 }}€</td>
 		</tr>
 		</tbody>

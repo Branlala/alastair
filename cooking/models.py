@@ -179,6 +179,8 @@ class Project_Shopping_List(models.Model):
 	calculation_quantity = models.FloatField(null=True)
 	calculation_measurement = models.CharField(max_length=2, choices=MEASUREMENTS, null=True)
 	effective_price = models.FloatField()
+	remarks = models.CharField(max_length=256)
+	first_occurrence = models.DateTimeField(blank=True, null=True)
 	
 	def effective_calculation_amount(self):
 		if(self.calculation_measurement):
@@ -196,7 +198,7 @@ class Project_Shopping_List(models.Model):
 		return self.name
 	
 	class Meta:
-		ordering = ['project_id', 'name']
+		ordering = ['project_id', 'first_occurrence', 'name']
 		managed = False
 		db_table = 'cooking_project_pricelist'
 		default_permissions = ()
