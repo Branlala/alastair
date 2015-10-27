@@ -57,4 +57,4 @@ docs/_build/
 target/
 
 # Settings
-/alastair_cookie/settings.py
+alastair_cookie/settings.py
