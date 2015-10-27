@@ -1,6 +1,6 @@
 {% extends "base_listing.html" %}
 
-{% block bodylisting_block %}<h2 class="sub-header">{% block heading_block %}Shopping List <a href="{% url 'cooking:shoppinglistcsv' %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Download as .csv"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span><span class="sr-only">Download</span></a>{% endblock %}</h2>
+{% block bodylisting_block %}<h2 class="sub-header">{% block heading_block %}Shopping List {% if inventory_active %}(Inventory Active){% else %}(Inventory Inactive){% endif %} <a href="{% url 'cooking:shoppinglistcsv' %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Download as .csv"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span><span class="sr-only">Download</span></a>{% endblock %}</h2>
 <div class="table-responsive">
 	<table class="table table-striped">
 		<thead>

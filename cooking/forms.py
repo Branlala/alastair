@@ -127,3 +127,13 @@ class Inventory_ItemForm(forms.ModelForm):
 			return self.cleaned_data.get('measurement')
 		else:
 			raise forms.ValidationError("Please use only measurements which are set in the ingredient either as calculation or buying measurement")
+	
+	def clean(self):
+		try:
+			Inventory_Item.objects.get(project=self.instance.project, ingredient=self.cleaned_data['ingredient'])
+		except Inventory_Item.DoesNotExist:
+			pass
+		else:
+			raise forms.ValidationError('This ingredient already exists!')
+
+		return self.cleaned_data

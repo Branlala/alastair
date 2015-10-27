@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.template.defaulttags import register
-from .models import Project, Meal, Project_Readonly, Project_Shopping_List, Meal_Receipe, Meal_Receipe_Shopping_List, Receipe, Inventory_Item
+from .models import Project, Meal, Project_Readonly, Project_Shopping_List, Project_Shopping_List_Invsub, Meal_Receipe, Meal_Receipe_Shopping_List, Receipe, Inventory_Item
 from .forms import ProjectForm, MealForm, ConfirmDeleteForm, Meal_ReceipeForm, Inventory_ItemForm
 from .helpers import prepareContext
 
@@ -158,7 +158,7 @@ def list_meal_receipe(request, meal):
 def meal_receipe_shopping_list(request, meal, receipe):
 	context = prepareContext(request)
 	if('active_project' not in context):
-		return list_projects(request)
+		return redirect('cooking:projects')
 	context['shopping_list'] = Meal_Receipe_Shopping_List.objects.filter(project_id=context['active_project'].id, meal_id=meal, receipe_id=receipe)
 	context['total_exact_price'] = context['shopping_list'].aggregate(tp=Sum('exact_price')).get('tp')
 	context['total_effective_price'] = context['shopping_list'].aggregate(tp=Sum('effective_price')).get('tp')
@@ -172,21 +172,36 @@ def project_shopping_list(request):
 	context = prepareContext(request)
 	if('active_project' not in context):
 		return redirect('cooking:projects')
-	context['shopping_list'] = Project_Shopping_List.objects.filter(project_id=context['active_project'].id)
+	if('inventory_active' not in request.session):
+		request.session['inventory_active'] = True
+	if(request.session['inventory_active']):
+		context['shopping_list'] = Project_Shopping_List_Invsub.objects.filter(project_id=context['active_project'].id).exclude(exact_amount=0)
+	else:
+		context['shopping_list'] = Project_Shopping_List.objects.filter(project_id=context['active_project'].id)
 	context['total_exact_price'] = context['shopping_list'].aggregate(tp=Sum('exact_price')).get('tp')
 	context['total_effective_price'] = context['shopping_list'].aggregate(tp=Sum('effective_price')).get('tp')
 	context['pagetitle'] = 'Shopping List'
+	context['inventory_active'] = request.session['inventory_active']
 	return render(request, 'listings/shopping_list.html', context)
 
 @login_required
 def inventory(request):
 	context = prepareContext(request)
-	
+	if('inventory_active' not in request.session):
+		request.session['inventory_active'] = True
 	if('remove_inventory_ingredient' in request.GET):
 		try:
 			Inventory_Item.objects.get(id=int(request.GET.get('remove_inventory_ingredient'))).delete()
 		except:
 			pass
+	
+	if('activate_inventory' in request.GET):
+		request.session['inventory_active'] = True
+	elif('deactivate_inventory' in request.GET):
+		request.session['inventory_active'] = False
+	
+	if('active_project' not in context):
+		return redirect('cooking:projects')
 	
 	inv = Inventory_Item(project=context['active_project'])
 	form = Inventory_ItemForm(request.POST or None, instance=inv)
@@ -198,4 +213,5 @@ def inventory(request):
 	context['form'] = form
 	context['ingredient_list'] = Inventory_Item.objects.all()
 	context['pagetitle'] = 'Inventory'
+	context['inventory_active'] = request.session.get('inventory_active', True)
 	return render(request, 'listings/inventory.html', context)

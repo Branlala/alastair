@@ -3,15 +3,17 @@
 
 {% block bodylisting_block %}
 {% for key in form.errors %}
+{% if key != "__all__" %}
 <div class="alert alert-danger">
+	
 	Error in Field "{{ key|capfirst }}":
 	{{ form.errors|get_item:key }}
-
+	
 </div>
-
+{% endif %}
 {% endfor %}
 
-<h2 class="sub-header">Already bought ingredients, will be excluded from Shopping List</h2>
+<h2 class="sub-header">Already bought ingredients{% if inventory_active %}, will be excluded from Shopping List{% endif %}</h2>
 <div class="table-responsive">
 	<table class="table table-striped">
 		<thead>
@@ -48,6 +50,13 @@
 		</tr>
 		</tbody>
 	</table>
+	
+	{% if inventory_active %}
+	<a href="{{ request.path|urlencode }}?deactivate_inventory" class="btn btn-danger" data-toggle="tooltip" title="Deactivate Inventory">Deactivate Inventory</a>
+	{% else %}
+	<a href="{{ request.path|urlencode }}?activate_inventory" class="btn btn-success" data-toggle="tooltip" title="Activate Inventory">Activate Inventory</a>
+	{% endif %}
+	
 </div>
 
 {% endblock %}

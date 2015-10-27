@@ -15,9 +15,7 @@ As Python modules, you will need to install mysqlclient:
 pip install msqlclient
 ```
 
-# Running
-
-To run it, at first modify alastair_cookie/settings.py to fit your needs. You will need to set another database, dbuser and dbpassword, and maybe you may disable debug mode. Also you should change the secret key, if you want to run it in production mode.
+To set everything up, at first modify alastair_cookie/settings.py to fit your needs. You will need to set another database, dbuser and dbpassword, and maybe you may disable debug mode. Also you should change the secret key, if you want to run it in production mode.
 
 Then you should be able to run the command
 ```
@@ -26,6 +24,8 @@ python manage.py syncdb
 
 This should create some database tables in the db and ask you to set up a superuser for the system. After this is done, import the create_views.sql into your Database (do this through phpmyadmin, the command line mysql client or whatever you prefer)
 
+# Running
+
 Then you should be able to run
 ```
 python manage.py runserver
@@ -33,7 +33,7 @@ python manage.py runserver
 
 This starts the server, you can also pass a port and an IP where it will listen to
 ```
-python manage.py runserver 0.0.0.0:8080
+python manage.py runserver 0.0.0.0:8000
 ```
 
 And you are done, you should have a working copy of alastair at localhost:8000. You can reach the admin panel over localhost:8000/admin
