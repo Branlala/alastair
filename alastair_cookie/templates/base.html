@@ -50,7 +50,60 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             {% if user.is_authenticated %}
-            {% block extra_nav_block %}{% endblock %}
+						
+			{% block extra_nav_block %} 
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ pagetitle }} <span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					{% if active_page == "projects" %}
+						<li class="active"><a href="{% url 'cooking:projects' %}">Overview <span class="sr-only">(current)</span></a></li>
+					{% else %}
+						<li><a href="{% url 'cooking:projects' %}">Overview</a></li>
+					{% endif %}
+					
+					{% if active_project != None %}
+						{% if active_page == "meals" %}
+							<li class="active"><a href="{% url 'cooking:meals' %}">Meals <span class="sr-only">(current)</span></a></li>
+						{% else %}
+							<li><a href="{% url 'cooking:meals' %}">Meals</a></li>
+						{% endif %}
+					
+						{% if active_page == "shoppinglist" %}
+							<li class="active"><a href="{% url 'cooking:shoppinglist' %}">Shopping List <span class="sr-only">(current)</span></a></li>
+						{% else %}
+							<li><a href="{% url 'cooking:shoppinglist' %}">Shopping List</a></li>
+						{% endif %}
+						
+						{% if active_page == "inventory" %}
+							<li class="active"><a href="{% url 'cooking:inventory' %}">Inventory <span class="sr-only">(current)</span></a></li>
+						{% else %}
+							<li><a href="{% url 'cooking:inventory' %}">Inventory</a></li>
+						{% endif %}
+					{% endif %}
+					<li role="seperator" class="divider"></li>
+					
+					{% if active_page == "receipes" %}
+						<li class="active"><a href="{% url 'cooking:receipes' %}">Receipes <span class="sr-only">(current)</span></a></li>
+					{% else %}
+						<li><a href="{% url 'cooking:receipes' %}">Receipes</a></li>
+					{% endif %}
+					
+					{% if active_page == "ingredients" %}
+						<li class="active"><a href="{% url 'cooking:ingredients' %}">Ingredients <span class="sr-only">(current)</span></a></li>
+					{% else %}
+						<li><a href="{% url 'cooking:ingredients' %}">Ingredients</a></li>
+					{% endif %}
+					
+					{% if active_page == "allergens" %}
+						<li class="active"><a href="{% url 'cooking:allergens' %}">Allergens <span class="sr-only">(current)</span></a></li>
+					{% else %}
+						<li><a href="{% url 'cooking:allergens' %}">Allergens</a></li>
+					{% endif %}
+				</ul>
+			</li>
+			{% endblock %}
+			
+			
             <li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ user }} <span class="caret"></span></a>
 				<ul class="dropdown-menu">
