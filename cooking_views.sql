@@ -38,7 +38,9 @@ CREATE VIEW cooking_meal_receipe_pricelist_partial AS SELECT p.id AS proj_id,
   ((mr.person_count / r.default_person_count) * SUM(IF(ri.measurement = i.buying_measurement, ri.amount, (ri.amount / i.calculation_quantity) * i.buying_quantity))) AS exact_amount, 
   i.price AS price,
   i.buying_measurement AS buying_measurement,
-  i.buying_quantity AS buying_quantity
+  i.buying_quantity AS buying_quantity,
+  i.remarks AS ing_remarks,
+  ri.remarks AS ri_remarks
 FROM cooking_project p
 INNER JOIN cooking_meal m ON m.project_id = p.id
 INNER JOIN cooking_meal_receipe mr ON m.id = mr.meal_id
@@ -48,7 +50,7 @@ INNER JOIN cooking_ingredient i ON i.id = ri.ingredient_id
 WHERE 1
 GROUP BY p.id, mr.id, i.id;
 
-CREATE VIEW cooking_meal_receipe_pricelist AS SELECT CONCAT(proj_id, meal_id, receipe_id, ing_id) AS id, proj_id, meal_id, receipe_id, ing_id, name, exact_amount, (exact_amount / buying_quantity) * price AS exact_price, CEIL(exact_amount / buying_quantity) * buying_quantity AS effective_amount, CEIL(exact_amount / buying_quantity) AS buying_count, buying_quantity, buying_measurement, CEIL(exact_amount / buying_quantity) * price AS effective_price
+CREATE VIEW cooking_meal_receipe_pricelist AS SELECT CONCAT(proj_id, meal_id, receipe_id, ing_id) AS id, proj_id, meal_id, receipe_id, ing_id, name, exact_amount, (exact_amount / buying_quantity) * price AS exact_price, CEIL(exact_amount / buying_quantity) * buying_quantity AS effective_amount, CEIL(exact_amount / buying_quantity) AS buying_count, buying_quantity, buying_measurement, CEIL(exact_amount / buying_quantity) * price AS effective_price, ing_remarks, ri_remarks AS remarks
 FROM cooking_meal_receipe_pricelist_partial;
 
 

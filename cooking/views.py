@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.template.defaulttags import register
 from .models import Project, Meal, Project_Readonly, Project_Shopping_List, Project_Shopping_List_Invsub, Meal_Receipe, Meal_Receipe_Shopping_List, Receipe, Inventory_Item
 from .forms import ProjectForm, MealForm, ConfirmDeleteForm, Meal_ReceipeForm, Inventory_ItemForm
-from .helpers import prepareContext
+from .helpers import prepareContext, add_to_inventory
 
 
 def hello(request):
@@ -175,6 +175,10 @@ def project_shopping_list(request):
 	if('inventory_active' not in request.session):
 		request.session['inventory_active'] = True
 	if(request.session['inventory_active']):
+		if('send_to_inventory' in request.GET):
+			sl = Project_Shopping_List_Invsub.objects.filter(project_id=context['active_project'].id).exclude(exact_amount=0)
+			for item in sl:
+				add_to_inventory(context['active_project'], item)
 		context['shopping_list'] = Project_Shopping_List_Invsub.objects.filter(project_id=context['active_project'].id).exclude(exact_amount=0)
 	else:
 		context['shopping_list'] = Project_Shopping_List.objects.filter(project_id=context['active_project'].id)

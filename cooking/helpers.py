@@ -1,12 +1,26 @@
 import csv, codecs
 from django.core.urlresolvers import resolve
 from django.template.defaulttags import register
-from .models import Project
+from .models import Project, Ingredient, Inventory_Item, Project_Shopping_List, Project_Shopping_List_Invsub
 
 @register.filter(name='get_item')
 def get_item(dictionary, key):
 	return dictionary.get(key)
 
+def add_to_inventory(proj, item):
+	ing = Ingredient.objects.get(id=item.ing_id)
+	inv = None
+	try:
+		inv = Inventory_Item.objects.get(project=proj, ingredient=ing)
+	except Inventory_Item.DoesNotExist:
+		inv = Inventory_Item(project=proj, ingredient=ing, measurement=ing.buying_measurement, amount=0)
+
+	amount = item.exact_amount
+	if(item.buying_measurement != inv.measurement):
+		amount = (amount / ing.calculation_quantity) * ing.buying_quantity
+		
+	inv.amount += amount
+	inv.save()
 
 def prepareContext(request):
 	context = {}

@@ -156,6 +156,8 @@ class Meal_Receipe_Shopping_List(models.Model):
 	buying_quantity = models.FloatField()
 	buying_measurement = models.CharField(max_length=2, choices=MEASUREMENTS)
 	effective_price = models.FloatField()
+	remarks = models.CharField(max_length=256)
+	ing_remarks = models.CharField(max_length=256)
 	
 	def __str__(self):
 		return self.name

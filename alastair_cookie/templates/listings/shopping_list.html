@@ -67,6 +67,10 @@
 		</tr>
 		</tbody>
 	</table>
+	
+	{% if inventory_active %}
+	<a href="{{ request.path|urlencode }}?send_to_inventory" class="btn btn-default" data-toggle="tooltip" title="Send all items on shopping list to Inventory">Send all to Inventory</a>
+	{% endif %}
 </div>
 
 {% block instructions_block %}{% endblock %}
