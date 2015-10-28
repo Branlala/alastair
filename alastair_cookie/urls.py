@@ -18,15 +18,16 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from .views import home, impressum
+from .views import home, impressum, logout_view
 from .forms import MyLoginForm, MyPasswordChangeForm
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls), name='admin'),
     url(r'^home/$', home, name='home'),
     url(r'^impressum/$', impressum, name='impressum'),
-    url(r'^login/$', auth_views.login, {'authentication_form':MyLoginForm, 'extra_context':{'heading':'Login'}}),
-    url(r'^password_change/$', auth_views.password_change, {'template_name':'registration/login.html', 'post_change_redirect':'/password_change/done/', 'password_change_form':MyPasswordChangeForm, 'extra_context':{'heading':'Change Password'}}),
+    url(r'^login/$', auth_views.login, {'authentication_form':MyLoginForm, 'extra_context':{'heading':'Login', 'pagetitle':'Login'}}),
+    url(r'^password_change/$', auth_views.password_change, {'template_name':'registration/login.html', 'post_change_redirect':'/password_change/done/', 'password_change_form':MyPasswordChangeForm, 'extra_context':{'heading':'Change Password', 'pagetitle':'Change Password'}}),
+    url(r'^logout/$', logout_view, name='logout'),
     url(r'^password_change/done/$', auth_views.password_change_done, {'template_name':'registration/login.html', 'extra_context':{'heading':'Password changed', 'message':'Your password was changed successfully!'}}),
     url('^', include('django.contrib.auth.urls')),
     url(r'^', include('cooking.urls', namespace='cooking'), name='cooking'),

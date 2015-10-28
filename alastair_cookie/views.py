@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 
 def home(request):
@@ -10,3 +10,7 @@ def impressum(request):
 	context = {}
 	context['pagetitle'] = 'Impressum'
 	return render(request, 'single/impressum.html', context)
+
+def logout_view(request):
+	logout(request)
+	return redirect('home')
