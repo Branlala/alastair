@@ -99,7 +99,7 @@ def project_shopping_list_data(proj, inventory_active):
 			exact_calculation_amount=Case(When(calculation_measurement__isnull=False, then=F('exact_amount') / F('buying_quantity') * F('calculation_quantity')),
 										default=None,
 										output_field=FloatField()),
-			buying_count=Func(F('exact_amount') / F('buying_quantity'), function='CEIL'),
+			buying_count=Func((F('exact_amount') / F('buying_quantity')) + 0.5, function='ROUND'),
 		).annotate(
 			effective_amount=F('buying_count') * F('buying_quantity'),
 			effective_calculation_amount=F('buying_count') * F('calculation_quantity'),
@@ -137,7 +137,7 @@ def project_shopping_list_data(proj, inventory_active):
 			exact_calculation_amount=Case(When(calculation_measurement__isnull=False, then=F('exact_amount') / F('buying_quantity') * F('calculation_quantity')),
 										default=None,
 										output_field=FloatField()),
-			buying_count=Func(F('exact_amount') / F('buying_quantity'), function='CEIL'),
+			buying_count=Func((F('exact_amount') / F('buying_quantity')) + 0.5, function='ROUND'),
 		).annotate(
 			effective_amount=F('buying_count') * F('buying_quantity'),
 			effective_calculation_amount=F('buying_count') * F('calculation_quantity'),
