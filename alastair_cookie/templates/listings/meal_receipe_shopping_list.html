@@ -1,10 +1,61 @@
-{% extends "listings/shopping_list.html" %}
+{% extends "base_listing.html" %}
 
-{% block heading_block %}Shopping List for Receipe "{{ receipe.name }}" in Meal "{{ meal.name }}" {% endblock %}
+{% block bodylisting_block %}<h2 class="sub-header">Shopping List for Receipe "{{ receipe.name }}" in Meal "{{ meal.name }}" </h2>
+
+<div class="table-responsive">
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th>Ingredient</th>
+			<th>Exact Amount</th>
+			<th>Remarks in Ingredient</th>
+			<th>Remarks in Receipe</th>
+			<th>Price</th>			
+		</tr>
+		</thead>
+		<tbody>
+		{% for ing in shopping_list %}
+			<tr class="{% cycle 'odd' 'even' %}">
+				<td><a href="{% url 'cooking:ingredients' ing.id %}">{{ ing.name }}</a></td>
+				
+				{% if ing.measurement == 'n' %}
+				<td>{{ ing.exact_amount|floatformat }} piece{{ ing.exact_amount|pluralize }}
+				{% else %}
+				<td>{{ ing.exact_amount|floatformat }}{{ ing.measurement }}
+				{% endif %}
+				
+				{% if ing.alternative_measurement %}
+					{% if ing.alternative_measurement == 'n' %}
+						({{ ing.alternative_exact_amount|floatformat }} piece{{ ing.alternative_exact_amount|pluralize }})</td>
+					{% else %}
+						({{ ing.alternative_exact_amount|floatformat }}{{ ing.alternative_measurement }})</td>
+					{% endif %}
+				{% endif %}
+				
+				<td>{{ ing.remarks}}</td>
+				
+				<td>{{ ing.mr_remarks }}</td>
+				 
+				<td>{{ ing.exact_price|floatformat:2 }}€</td>
+			</tr>		
+		{% endfor %}
+		<tr>
+			<td>Total</td><td></td>
+			<!--<td>exact price {{ total_exact_price|floatformat:2 }}€</td>--><td></td><td></td>
+			<td>{{ total_exact_price|floatformat:2 }}€</td>
+		</tr>
+		</tbody>
+	</table>
+	
+	{% if inventory_active %}
+	<a href="{{ request.path|urlencode }}?send_to_inventory" class="btn btn-default" data-toggle="tooltip" title="Send all items on shopping list to Inventory">Send all to Inventory</a>
+	{% endif %}
+</div>
 
 {% block instructions_block %}
 <h2 class="sub-header">Instructions</h2>
 <div class="well">
 	{{ receipe.instructions }}
 </div>
+{% endblock %}
 {% endblock %}

@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.template.defaulttags import register
 from .models import Project, Meal, Project_Readonly, Project_Shopping_List, Project_Shopping_List_Invsub, Meal_Receipe, Meal_Receipe_Shopping_List, Receipe, Inventory_Item
 from .forms import ProjectForm, MealForm, ConfirmDeleteForm, Meal_ReceipeForm, Inventory_ItemForm
-from .helpers import prepareContext, add_to_inventory
+from .helpers import prepareContext, add_to_inventory, meal_shopping_list
 
 
 def hello(request):
@@ -159,11 +159,12 @@ def meal_receipe_shopping_list(request, meal, receipe):
 	context = prepareContext(request)
 	if('active_project' not in context):
 		return redirect('cooking:projects')
-	context['shopping_list'] = Meal_Receipe_Shopping_List.objects.filter(project_id=context['active_project'].id, meal_id=meal, receipe_id=receipe)
-	context['total_exact_price'] = context['shopping_list'].aggregate(tp=Sum('exact_price')).get('tp')
-	context['total_effective_price'] = context['shopping_list'].aggregate(tp=Sum('effective_price')).get('tp')
+	
+	#context['shopping_list'] = Meal_Receipe_Shopping_List.objects.filter(project_id=context['active_project'].id, meal_id=meal, receipe_id=receipe)
 	context['meal'] = Meal.objects.get(id=meal)
 	context['receipe'] = Receipe.objects.get(id=receipe)
+	context['shopping_list'] = meal_shopping_list(context['meal'], context['receipe'])
+	context['total_exact_price'] = context['shopping_list'].aggregate(tp=Sum('exact_price')).get('tp')
 	context['pagetitle'] = 'Meal-specific Shopping List'
 	return render(request, 'listings/meal_receipe_shopping_list.html', context)
 

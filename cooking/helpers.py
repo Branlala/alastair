@@ -1,7 +1,8 @@
 import csv, codecs
 from django.core.urlresolvers import resolve
+from django.db.models import F, ExpressionWrapper, FloatField, CharField, Case, When
 from django.template.defaulttags import register
-from .models import Project, Ingredient, Inventory_Item, Project_Shopping_List, Project_Shopping_List_Invsub
+from .models import Project, Ingredient, Inventory_Item, Project_Shopping_List, Project_Shopping_List_Invsub, MEASUREMENTS
 
 @register.filter(name='get_item')
 def get_item(dictionary, key):
@@ -22,6 +23,40 @@ def add_to_inventory(proj, item):
 	inv.amount += amount
 	inv.save()
 
+def meal_shopping_list(meal, receipe):
+	return Ingredient.objects.filter(receipe=receipe, receipe__meal=meal).annotate(
+		# Exact amount = (ri.amount / r.default_person_count) * mr.person_count
+		exact_amount=ExpressionWrapper((F('receipe_ingredient__amount') / F('receipe__default_person_count')) * F('receipe__meal_receipe__person_count') , output_field=FloatField()),
+		# Copy ri.measurement for easier access
+		measurement=F('receipe_ingredient__measurement'),
+		# Also copy ri.remarks for easier access
+		mr_remarks=F('receipe_ingredient__remarks'),
+		# Exact price = (mr.person_count / r.default_person_count) * i.price
+		exact_price=ExpressionWrapper((F('receipe__meal_receipe__person_count') / F('receipe__default_person_count')) * F('price'), output_field=FloatField()),
+		# If calculation_measurement != null and calculation_measurement == ri.measurement
+		# Then alternative exact price = (((ri.amount / i.calculation_quantity) * i.buying_quantity) / r.default_person_count) * mr.person_count)
+		# Can be optimized... :D
+		alternative_exact_amount=Case(
+			When(calculation_measurement__isnull=False,
+				 calculation_measurement=F('receipe_ingredient__measurement'),
+				 then=(((F('receipe_ingredient__amount') / F('calculation_quantity')) * F('buying_quantity')) / F('receipe__default_person_count')) * F('receipe__meal_receipe__person_count')),
+			When(calculation_measurement__isnull=False,
+				 buying_measurement=F('receipe_ingredient__measurement'),
+				 then=(F('receipe_ingredient__amount') / F('buying_quantity')) * F('calculation_quantity')),
+			default=None,
+			output_field=FloatField()),
+		# Also annotate the appropriate measurement
+		alternative_measurement=Case(
+			When(calculation_measurement__isnull=False,
+				 calculation_measurement=F('receipe_ingredient__measurement'),
+				 then=F('buying_measurement')),
+			When(calculation_measurement__isnull=False,
+				 buying_measurement=F('receipe_ingredient__measurement'),
+				 then=F('calculation_measurement')),
+			default=None,
+			output_field=CharField(max_length=2, choices=MEASUREMENTS)),
+		)
+	
 def prepareContext(request):
 	context = {}
 	if('activate_project' in request.GET):
