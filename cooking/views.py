@@ -6,9 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.template.defaulttags import register
-from .models import Project, Meal, Project_Readonly, Project_Shopping_List, Project_Shopping_List_Invsub, Meal_Receipe, Meal_Receipe_Shopping_List, Receipe, Inventory_Item
+from .models import Project, Meal, Project_Readonly, Meal_Receipe, Receipe, Inventory_Item
 from .forms import ProjectForm, MealForm, ConfirmDeleteForm, Meal_ReceipeForm, Inventory_ItemForm
-from .helpers import prepareContext, add_to_inventory, meal_shopping_list
+from .helpers import prepareContext, add_to_inventory, meal_shopping_list, project_shopping_list_data
 
 
 def hello(request):
@@ -168,6 +168,27 @@ def meal_receipe_shopping_list(request, meal, receipe):
 	context['pagetitle'] = 'Meal-specific Shopping List'
 	return render(request, 'listings/meal_receipe_shopping_list.html', context)
 
+#@login_required
+#def project_shopping_list(request):
+	#context = prepareContext(request)
+	#if('active_project' not in context):
+		#return redirect('cooking:projects')
+	#if('inventory_active' not in request.session):
+		#request.session['inventory_active'] = True
+	#if(request.session['inventory_active']):
+		#if('send_to_inventory' in request.GET):
+			#sl = Project_Shopping_List_Invsub.objects.filter(project_id=context['active_project'].id).exclude(exact_amount=0)
+			#for item in sl:
+				#add_to_inventory(context['active_project'], item)
+		#context['shopping_list'] = Project_Shopping_List_Invsub.objects.filter(project_id=context['active_project'].id).exclude(exact_amount=0)
+	#else:
+		#context['shopping_list'] = Project_Shopping_List.objects.filter(project_id=context['active_project'].id)
+	#context['total_exact_price'] = context['shopping_list'].aggregate(tp=Sum('exact_price')).get('tp')
+	#context['total_effective_price'] = context['shopping_list'].aggregate(tp=Sum('effective_price')).get('tp')
+	#context['pagetitle'] = 'Shopping List'
+	#context['inventory_active'] = request.session['inventory_active']
+	#return render(request, 'listings/shopping_list.html', context)
+
 @login_required
 def project_shopping_list(request):
 	context = prepareContext(request)
@@ -177,13 +198,12 @@ def project_shopping_list(request):
 		request.session['inventory_active'] = True
 	if(request.session['inventory_active']):
 		if('send_to_inventory' in request.GET):
-			sl = Project_Shopping_List_Invsub.objects.filter(project_id=context['active_project'].id).exclude(exact_amount=0)
+			sl = project_shopping_list_data(context['active_project'], True)
 			for item in sl:
 				add_to_inventory(context['active_project'], item)
-		context['shopping_list'] = Project_Shopping_List_Invsub.objects.filter(project_id=context['active_project'].id).exclude(exact_amount=0)
-	else:
-		context['shopping_list'] = Project_Shopping_List.objects.filter(project_id=context['active_project'].id)
-	context['total_exact_price'] = context['shopping_list'].aggregate(tp=Sum('exact_price')).get('tp')
+		
+	context['shopping_list'] = project_shopping_list_data(context['active_project'], request.session['inventory_active'])
+	#context['total_exact_price'] = context['shopping_list'].aggregate(tp=Sum('exact_price')).get('tp')
 	context['total_effective_price'] = context['shopping_list'].aggregate(tp=Sum('effective_price')).get('tp')
 	context['pagetitle'] = 'Shopping List'
 	context['inventory_active'] = request.session['inventory_active']

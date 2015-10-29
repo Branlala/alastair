@@ -18,19 +18,20 @@
 			<tr class="{% cycle 'odd' 'even' %}">
 				<td><a href="{% url 'cooking:ingredients' ing.id %}">{{ ing.name }}</a></td>
 				
-				{% if ing.measurement == 'n' %}
+				{% if ing.buying_measurement == 'n' %}
 				<td>{{ ing.exact_amount|floatformat }} piece{{ ing.exact_amount|pluralize }}
 				{% else %}
-				<td>{{ ing.exact_amount|floatformat }}{{ ing.measurement }}
+				<td>{{ ing.exact_amount|floatformat }}{{ ing.buying_measurement }}
 				{% endif %}
 				
-				{% if ing.alternative_measurement %}
-					{% if ing.alternative_measurement == 'n' %}
-						({{ ing.alternative_exact_amount|floatformat }} piece{{ ing.alternative_exact_amount|pluralize }})</td>
+				{% if ing.calculation_measurement %}
+					{% if ing.calculation_measurement == 'n' %}
+						({{ ing.exact_calculation_amount|floatformat }} piece{{ ing.exact_calculation_amount|pluralize }})
 					{% else %}
-						({{ ing.alternative_exact_amount|floatformat }}{{ ing.alternative_measurement }})</td>
+						({{ ing.exact_calculation_amount|floatformat }}{{ ing.calculation_measurement }})
 					{% endif %}
 				{% endif %}
+				</td>
 				
 				<td>{{ ing.remarks}}</td>
 				
@@ -46,10 +47,6 @@
 		</tr>
 		</tbody>
 	</table>
-	
-	{% if inventory_active %}
-	<a href="{{ request.path|urlencode }}?send_to_inventory" class="btn btn-default" data-toggle="tooltip" title="Send all items on shopping list to Inventory">Send all to Inventory</a>
-	{% endif %}
 </div>
 
 {% block instructions_block %}

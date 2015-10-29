@@ -1,12 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from .helpers import prepareContext
+from .helpers import prepareContext, project_shopping_list_data
 try:
 	from .helpers import UnicodeWriter
 except:
 	from csv import writer as UnicodeWriter
-from .models import Project_Shopping_List, Project_Shopping_List_Invsub, Ingredient, Allergen, Meal, Meal_Receipe_Shopping_List
+from .models import Ingredient, Allergen, Meal
 
 def conv_measurement(measurement, quantity):
 	if(measurement == 'n'):
@@ -31,8 +31,8 @@ def project_csv(request):
 		for receipe in allreceipes:
 			allingredients = receipe.ingredients.all()
 			for ing in allingredients:
-				shopping_item = Meal_Receipe_Shopping_List.objects.get(project_id=context['active_project'].id, meal_id=meal.id, receipe_id=receipe.id, ing_id=ing.id)
-			
+				#shopping_item = Meal_Receipe_Shopping_List.objects.get(project_id=context['active_project'].id, meal_id=meal.id, receipe_id=receipe.id, ing_id=ing.id)
+				pass
 			
 	
 	return response
@@ -50,22 +50,19 @@ def project_shopping_list_csv(request):
 	writer.writerow(['First Use', 'Ingredient', 'Exact Amount 1', '', 'Exact Amount 2', '', 'Effective Amount 1', '', 'Effective Amount 2', '', 'Buying Count', 'Effective Price', 'Remarks'])
 	if('inventory_active' not in request.session):
 		request.session['inventory_active'] = True
-	shoppinglist = None
-	if(request.session['inventory_active']):
-		shoppinglist = Project_Shopping_List_Invsub.objects.filter(project_id=context['active_project'].id).exclude(exact_amount=0)
-	else:
-		shoppinglist = Project_Shopping_List.objects.filter(project_id=context['active_project'].id)
+	shoppinglist = project_shopping_list_data(context['active_project'], request.session['inventory_active'])
 	for item in shoppinglist:
-		writer.writerow([item.first_occurrence,
+		if(item.exact_amount > 0):
+			writer.writerow([item.first_occurrence,
 				item.name, 
 				item.exact_amount, 
 				conv_measurement(item.buying_measurement, item.exact_amount),
-				item.exact_calculation_amount(),
-				conv_measurement(item.calculation_measurement, item.exact_calculation_amount()),
+				item.exact_calculation_amount,
+				conv_measurement(item.calculation_measurement, item.exact_calculation_amount),
 				item.effective_amount,
 				conv_measurement(item.buying_measurement, item.effective_amount),
-				item.effective_calculation_amount(),
-				conv_measurement(item.calculation_measurement, item.effective_calculation_amount()),
+				item.effective_calculation_amount,
+				conv_measurement(item.calculation_measurement, item.effective_calculation_amount),
 				item.buying_count,
 				item.effective_price,
 				item.remarks])
