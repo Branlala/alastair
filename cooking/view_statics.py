@@ -2,7 +2,7 @@ from django.core.urlresolvers import resolve, reverse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import render, redirect
-from .form_statics import IngredientForm, Receipe_IngredientForm, ReceipeForm
+from .form_statics import IngredientForm, Receipe_IngredientForm, ReceipeForm, AllergenForm
 from .forms import ConfirmDeleteForm
 from .models import Ingredient, Allergen, Receipe, Receipe_Ingredient
 from .helpers import prepareContext
@@ -82,8 +82,10 @@ def list_receipe_ingredient(request, active_receipe):
 	
 	context['form'] = form
 	context['receipe'] = rec
-	context['receipe_ingredient_list'] = Receipe_Ingredient.objects.filter(receipe=active_receipe)
-	context['ingredient_list'] = Ingredient.objects.all()
+	context['receipe_ingredient_list'] = Receipe_Ingredient.objects.filter(receipe=rec)
+	context['allergen_list'] = Allergen.objects.filter(ingredient__receipe=rec).distinct()
+	for allergen in context['allergen_list']:
+		allergen.used_in = ', '.join([x.name for x in allergen.ingredient_set.filter(receipe=rec)])
 	context['pagetitle'] = 'Ingredients for Receipe'
 	return render(request, 'listings/receipe_ingredient.html', context)
 
@@ -145,6 +147,19 @@ def new_ingredient(request):
 @login_required
 def list_allergens(request):
 	context = prepareContext(request)
+	
+	if('remove_allergen' in request.GET):
+		try:
+			Allergen.objects.get(id=int(request.GET.get('remove_allergen'))).delete()
+		except:
+			pass
+	
+	form = AllergenForm(request.POST or None)
+	if(form.is_valid()):
+		form.save()
+		form = AllergenForm(None)
+	
+	context['form'] = form
 	context['allergen_list'] = Allergen.objects.all()
 	context['pagetitle'] = 'Allergens'
 	return render(request, 'listings/allergens.html', context)

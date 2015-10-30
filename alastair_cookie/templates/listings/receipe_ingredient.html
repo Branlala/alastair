@@ -52,4 +52,13 @@
   {{ receipe.instructions }}
 </div>
 
+<h2 class="sub-header">Allergens in {{ receipe.name }}</h2>
+<ul>
+	{% for allergen in allergen_list %}
+		<li>{{ allergen.name }} ({{ allergen.used_in }})</li>
+	{% empty %}
+		<li>No allergens in this receipe!</li>
+	{% endfor %}
+</ul>
+
 {% endblock %}

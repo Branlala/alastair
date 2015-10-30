@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Button, Field, Hidden, HTML, Div
 from crispy_forms.bootstrap import FormActions, AppendedText, StrictButton,  InlineField
-from cooking.models import Receipe_Ingredient, Ingredient, Receipe
+from cooking.models import Receipe_Ingredient, Ingredient, Receipe, Allergen
 
 class ReceipeForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -124,3 +124,26 @@ class IngredientForm(forms.ModelForm):
 	class Meta:
 		model = Ingredient
 		exclude = ['id']
+		
+		
+class AllergenForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(AllergenForm, self).__init__(*args, **kwargs)
+		self.helper = FormHelper()
+		self.helper.form_class = 'form-inline'
+		self.helper.field_template = 'bootstrap3/layout/inline_field.html'
+		self.helper.form_method = 'post'
+		self.helper.form_action = ''
+		self.helper.layout = Layout(
+			HTML('<td>'),
+			InlineField('name'), 
+			HTML('</td><td>'),
+			StrictButton('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span><span class="sr-only">Add</span>', type='submit', css_class='btn btn-default btn-sm'),
+			HTML('</td>'),
+		)
+		
+	class Meta:
+		model = Allergen
+		exclude = []
+		
+		

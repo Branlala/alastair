@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.template.defaulttags import register
-from .models import Project, Meal, Project_Readonly, Meal_Receipe, Receipe, Inventory_Item
+from .models import Project, Meal, Project_Readonly, Meal_Receipe, Receipe, Inventory_Item, Allergen
 from .forms import ProjectForm, MealForm, ConfirmDeleteForm, Meal_ReceipeForm, Inventory_ItemForm
 from .helpers import prepareContext, add_to_inventory, meal_shopping_list, project_shopping_list_data
 
@@ -165,6 +165,9 @@ def meal_receipe_shopping_list(request, meal, receipe):
 	context['receipe'] = Receipe.objects.get(id=receipe)
 	context['shopping_list'] = meal_shopping_list(context['meal'], context['receipe'])
 	context['total_exact_price'] = context['shopping_list'].aggregate(tp=Sum('exact_price')).get('tp')
+	context['allergen_list'] = Allergen.objects.filter(ingredient__receipe=context['receipe']).distinct()
+	for allergen in context['allergen_list']:
+		allergen.used_in = ', '.join([x.name for x in allergen.ingredient_set.filter(receipe=context['receipe'])])
 	context['pagetitle'] = 'Meal-specific Shopping List'
 	return render(request, 'listings/meal_receipe_shopping_list.html', context)
 

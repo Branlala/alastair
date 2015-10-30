@@ -1,4 +1,5 @@
 {% extends "base_listing.html" %}
+{% load crispy_forms_tags %}
 
 {% block bodylisting_block %}
 <div class="alert alert-warning">
@@ -6,20 +7,32 @@ Editing of Allergens and the listing of Allergens in a receipe is not yet suppor
 Still it could be a good idea to add allergens to ingredients already, as he might finish the soup soon.
 </div>
 
+{% for key in form.errors %}
+<div class="alert alert-danger">
+	Error in Field "{{ key|capfirst }}":
+	{{ form.errors|get_item:key }}
+
+</div>
+
+{% endfor %}
+
 <h2 class="sub-header">Known Allergens</h2>
 <div class="table-responsive">
 	<table class="table table-striped">
 		<thead>
 		<tr>
 			<th>Name</th>
+			<th></th>
 		</tr>
 		</thead>
 		<tbody>
 		{% for allergen in allergen_list %}
 			<tr>
 				<td><a href="#">{{ allergen.name }}</a></td>
+				<td><a href="{{ request.path|urlencode }}?remove_allergen={{ allergen.id }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Remove allergen {{ allergen.name }}"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span><span class="sr-only">Del</span></a></td>
 			</tr>		
 		{% endfor %}
+		{% crispy form %}
 		</tbody>
 	</table>
 </div>
