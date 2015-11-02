@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.template.defaulttags import register
 from .models import Project, Meal, Project_Readonly, Meal_Receipe, Receipe, Inventory_Item, Allergen
 from .forms import ProjectForm, MealForm, ConfirmDeleteForm, Meal_ReceipeForm, Inventory_ItemForm
-from .helpers import prepareContext, add_to_inventory, meal_shopping_list, project_shopping_list_data
+from .helpers import prepareContext, add_to_inventory, meal_shopping_list, project_shopping_list_data, inventory_data
 
 
 def hello(request):
@@ -239,7 +239,7 @@ def inventory(request):
 		form = Inventory_ItemForm(None, instance=inv)
 	
 	context['form'] = form
-	context['ingredient_list'] = Inventory_Item.objects.filter(project=context['active_project'])
+	context['ingredient_list'] = inventory_data(context['active_project'])
 	context['pagetitle'] = 'Inventory'
 	context['inventory_active'] = request.session.get('inventory_active', True)
 	return render(request, 'listings/inventory.html', context)

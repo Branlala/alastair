@@ -20,27 +20,31 @@
 		<tr>
 			<th>Name</th>
 			<th>Amount</th>
+			<th>Used in meals</th>
 			<th>Price</th>
 			<th>Remarks</th>
 			<th></th>
 		</tr>
 		</thead>
 		<tbody>
-		{% for ing in ingredient_list %}
+		{% for inv in ingredient_list %}
 			<tr>
-				<td><a href="{% url "cooking:ingredients" ing.ingredient.id %}">{{ ing.ingredient.name }}</a></td>
+				<td><a href="{% url "cooking:ingredients" inv.ingredient.id %}">{{ inv.ingredient.name }}</a></td>
 				
-				{% if ing.measurement == 'n' %}
-				<td>{{ ing.amount|floatformat }} piece{{ ing.amount|pluralize }}</td>
+				{% if inv.measurement == 'n' %}
+				<td>{{ inv.amount|floatformat }} piece{{ inv.amount|pluralize }}</td>
+				<td>{{ inv.already_used|floatformat }} piece{{ inv.already_used|pluralize }}</td>
 				{% else %}
-				<td>{{ ing.amount|floatformat }}{{ ing.measurement }}</td>
+				<td>{{ inv.amount|floatformat }}{{ inv.measurement }}</td>
+				<td>{{ inv.already_used|floatformat }}{{ inv.measurement }}</td>
 				{% endif %}
 				
-				<td>{{ ing.exact_price|floatformat:2 }}€</td>
 				
-				<td>{{ ing.remarks }}</td>
+				<td>{{ inv.exact_price|floatformat:2 }}€</td>
 				
-				<td><a href="{{ request.path|urlencode }}?remove_inventory_ingredient={{ ing.id }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Remove ingredient {{ ing.ingredient.name }} from inventory"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span><span class="sr-only">Del</span></a></td>
+				<td>{{ inv.remarks }}</td>
+				
+				<td><a href="{{ request.path|urlencode }}?remove_inventory_ingredient={{ inv.id }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Remove ingredient {{ inv.ingredient.name }} from inventory"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span><span class="sr-only">Del</span></a></td>
 			</tr>		
 		{% endfor %}
 		<tr>

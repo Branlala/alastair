@@ -109,7 +109,7 @@ class Inventory_ItemForm(forms.ModelForm):
 				Div(InlineField('measurement'), css_class='col-md-6'),
 				css_class='row'
 			),
-			HTML('</td><td></td><td>'),
+			HTML('</td><td></td><td></td><td>'),
 			InlineField('remarks'),
 			HTML('</td><td>'),
 			StrictButton('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span><span class="sr-only">Add</span>', type='submit', css_class='btn btn-default btn-sm'),

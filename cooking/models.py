@@ -100,12 +100,7 @@ class Inventory_Item(models.Model):
 	amount = models.FloatField()
 	measurement = models.CharField(max_length=2, choices=MEASUREMENTS)
 	remarks = models.CharField(max_length=256, blank=True)
-	
-	def exact_price(self):
-		if(self.measurement == self.ingredient.calculation_measurement):
-			return decimal.Decimal(self.amount / self.ingredient.calculation_quantity) * self.ingredient.price
-		else:
-			return decimal.Decimal(self.amount / self.ingredient.buying_quantity) * self.ingredient.price
+
 	
 	def __str__(self):
 		return self.ingredient.name

@@ -144,8 +144,33 @@ def project_shopping_list_data(proj, inventory_active):
 			effective_price=ExpressionWrapper(F('buying_count') * F('price'), output_field=FloatField()),
 		).values('first_occurrence', 'name', 'id', 'buying_measurement', 'buying_quantity', 'calculation_measurement', 'calculation_quantity', 'exact_amount', 'exact_calculation_amount', 'effective_amount', 'effective_calculation_amount', 'remarks', 'effective_price', 'buying_count', 'price')
 
-#def inventory_data(proj):
-	#return Inventory_Item.objects.filter(project=context['active_project']).annotate
+def inventory_data(proj):
+	return Inventory_Item.objects.filter(Q(project=proj) & Q(ingredient__receipe__meal__project=proj)).annotate(
+			exact_amount_tmp=Case(
+				When(ingredient__buying_measurement=F('ingredient__receipe_ingredient__measurement'),
+					then=(F('ingredient__receipe_ingredient__amount') / F('ingredient__receipe__default_person_count')) * F('ingredient__receipe__meal_receipe__person_count')),
+				When(ingredient__calculation_measurement=F('ingredient__receipe_ingredient__measurement'),
+					then=(((F('ingredient__receipe_ingredient__amount') / F('ingredient__calculation_quantity')) * F('ingredient__buying_quantity')) / F('ingredient__receipe__default_person_count')) * F('ingredient__receipe__meal_receipe__person_count')),
+				default=0,
+				output_field=FloatField()),
+		).annotate(
+			exact_total_amount = Sum(F('exact_amount_tmp'))
+		).annotate(
+			already_used = Case(
+				When(measurement=F('ingredient__buying_measurement'),
+					then=F('exact_total_amount')),
+				When(measurement=F('ingredient__calculation_measurement'),
+					then=(F('exact_total_amount') / F('ingredient__buying_quantity')) * F('ingredient__calculation_quantity')),
+				default=0,
+				output_field=FloatField()),
+			exact_price = Case(
+				When(measurement=F('ingredient__buying_measurement'),
+					then=(F('amount') / F('ingredient__buying_quantity')) * F('ingredient__price')),
+				When(measurement=F('ingredient__calculation_measurement'),
+					then=(F('amount') / F('ingredient__calculation_quantity')) * F('ingredient__price')),
+				default=0,
+				output_field=FloatField()),
+		)
 	
 
 def prepareContext(request):
