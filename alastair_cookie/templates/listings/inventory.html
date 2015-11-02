@@ -52,9 +52,9 @@
 	</table>
 	
 	{% if inventory_active %}
-	<a href="{{ request.path|urlencode }}?deactivate_inventory" class="btn btn-danger" data-toggle="tooltip" title="Deactivate Inventory">Deactivate Inventory</a>
+	<a href="{{ request.path|urlencode }}?deactivate_inventory" class="btn btn-danger" data-toggle="tooltip" title="Deactivate Inventory to see the full list of ingredients and the total price at the shopping list page">Deactivate Inventory</a>
 	{% else %}
-	<a href="{{ request.path|urlencode }}?activate_inventory" class="btn btn-success" data-toggle="tooltip" title="Activate Inventory">Activate Inventory</a>
+	<a href="{{ request.path|urlencode }}?activate_inventory" class="btn btn-success" data-toggle="tooltip" title="Activate Inventory to have the real shopping list and the still to pay prices at the shopping list page">Activate Inventory</a>
 	{% endif %}
 	
 </div>

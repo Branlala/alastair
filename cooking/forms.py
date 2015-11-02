@@ -134,6 +134,6 @@ class Inventory_ItemForm(forms.ModelForm):
 		except Inventory_Item.DoesNotExist:
 			pass
 		else:
-			raise forms.ValidationError('This ingredient already exists!')
+			raise forms.ValidationError('This ingredient is already in inventory!')
 
 		return self.cleaned_data

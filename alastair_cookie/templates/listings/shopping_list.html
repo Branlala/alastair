@@ -19,7 +19,7 @@
 			{% if ing.exact_amount > 0 %}
 				<tr class="{% cycle 'odd' 'even' %}">
 					<td>{{ ing.first_occurrence|date:"d.M" }}</td>
-					<td><a href="#">{{ ing.name }}</a></td>
+					<td><a href="{% url 'cooking:ingredients' ing.id %}" data-toggle="tooltip" title="Price per Unit: {{ ing.price }}&euro; for {% if ing.buying_measurement == 'n' %}{{ ing.buying_quantity|floatformat }} piece{{ ing.buying_quantity|pluralize }}{% else %}{{ ing.buying_quantity|floatformat }}{{ ing.buying_measurement }}{% endif %}{% if ing.calculation_measurement %} or {% if ing.calculation_measurement == 'n' %}{{ ing.calculation_quantity|floatformat }} piece{{ ing.calculation_quantity|pluralize }}{% else %}{{ ing.calculation_quantity|floatformat }}{{ ing.calculation_measurement }}{% endif %}{% endif %}">{{ ing.name }}</a></td>
 					
 					{% if ing.buying_measurement == 'n' %}
 					<td>{{ ing.exact_amount|floatformat }} piece{{ ing.buying_quantity|pluralize }}
@@ -59,14 +59,14 @@
 					
 					<td>{{ ing.remarks }}</td>
 					
-					<td>{{ ing.effective_price|floatformat:2 }}€</td>
+					<td>{{ ing.effective_price|floatformat:2 }}&euro;</td>
 				</tr>
 			{% endif %}
 		{% endfor %}
 		<tr>
 			<td>Total</td><td></td><td></td>
 			<!--<td>exact price {{ total_exact_price|floatformat:2 }}€</td>--><td></td><td></td>
-			<td>{{ total_effective_price|floatformat:2 }}€</td>
+			<td>{{ total_effective_price|floatformat:2 }}&euro;</td>
 		</tr>
 		</tbody>
 	</table>

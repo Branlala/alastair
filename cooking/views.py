@@ -239,7 +239,13 @@ def inventory(request):
 		form = Inventory_ItemForm(None, instance=inv)
 	
 	context['form'] = form
-	context['ingredient_list'] = Inventory_Item.objects.all()
+	context['ingredient_list'] = Inventory_Item.objects.filter(project=context['active_project'])
 	context['pagetitle'] = 'Inventory'
 	context['inventory_active'] = request.session.get('inventory_active', True)
 	return render(request, 'listings/inventory.html', context)
+
+@login_required
+def propose_receipes(request):
+	context = prepareContext(request)
+	context['pagetitle'] = 'Propose Receipes'
+	return render(request, 'listings/propose_receipes.html', context)

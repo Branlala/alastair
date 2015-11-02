@@ -1,5 +1,5 @@
 from django.conf.urls import include, url, patterns
-from .views import hello, list_projects, new_project, del_project, edit_project, list_meals, edit_meal, del_meal, new_meal, list_meal_receipe, meal_receipe_shopping_list, project_shopping_list, inventory
+from .views import hello, list_projects, new_project, del_project, edit_project, list_meals, edit_meal, del_meal, new_meal, list_meal_receipe, meal_receipe_shopping_list, project_shopping_list, inventory, propose_receipes
 from .view_statics import list_receipes, edit_receipe, new_receipe, del_receipe, list_receipe_ingredient, list_ingredients,  edit_ingredient, new_ingredient, del_ingredient, list_allergens
 from .csv_views import project_shopping_list_csv, ingredients_csv
 
@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^shopping_list/$', project_shopping_list, name='shoppinglist'),
     url(r'^shopping_list/download.csv$', project_shopping_list_csv, name='shoppinglistcsv'),
     url(r'^inventory/$', inventory, name='inventory'),
+    url(r'^propose_receipes/$', propose_receipes, name='proposereceipes'),
     url(r'^receipes/$', list_receipes, name='receipes'),
     url(r'^receipes/new$', new_receipe, name='newreceipe'),
     url(r'^receipe/(?P<active_receipe>[0-9]+)/$', list_receipe_ingredient, name='receipes'),

@@ -54,7 +54,7 @@ def meal_shopping_list(meal, receipe):
 	
 def project_shopping_list_data(proj, inventory_active):
 	if(inventory_active):
-		return Ingredient.objects.filter(receipe__meal__project=proj).annotate(
+		return Ingredient.objects.filter(Q(receipe__meal__project=proj) & (Q(inventory_item__project=proj) | Q(inventory_item__isnull=True))).annotate(
 			# Copy ri.measurement for easier access
 			measurement=F('receipe_ingredient__measurement'),
 			# Also copy ri.remarks for easier access
@@ -104,7 +104,7 @@ def project_shopping_list_data(proj, inventory_active):
 			effective_amount=F('buying_count') * F('buying_quantity'),
 			effective_calculation_amount=F('buying_count') * F('calculation_quantity'),
 			effective_price=ExpressionWrapper(F('buying_count') * F('price'), output_field=FloatField()),
-		)
+		).values('first_occurrence', 'name', 'id', 'buying_measurement', 'buying_quantity', 'calculation_measurement', 'calculation_quantity', 'exact_amount', 'exact_calculation_amount', 'effective_amount', 'effective_calculation_amount', 'remarks', 'effective_price', 'buying_count', 'price')
 	else:
 		return Ingredient.objects.filter(receipe__meal__project=proj).annotate(
 			# Copy ri.measurement for easier access
@@ -142,8 +142,12 @@ def project_shopping_list_data(proj, inventory_active):
 			effective_amount=F('buying_count') * F('buying_quantity'),
 			effective_calculation_amount=F('buying_count') * F('calculation_quantity'),
 			effective_price=ExpressionWrapper(F('buying_count') * F('price'), output_field=FloatField()),
-		)
+		).values('first_occurrence', 'name', 'id', 'buying_measurement', 'buying_quantity', 'calculation_measurement', 'calculation_quantity', 'exact_amount', 'exact_calculation_amount', 'effective_amount', 'effective_calculation_amount', 'remarks', 'effective_price', 'buying_count', 'price')
+
+#def inventory_data(proj):
+	#return Inventory_Item.objects.filter(project=context['active_project']).annotate
 	
+
 def prepareContext(request):
 	context = {}
 	if('activate_project' in request.GET):
