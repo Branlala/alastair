@@ -1,6 +1,6 @@
 from django.core.urlresolvers import resolve, reverse
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
+from django.db.models import Sum, F, Case, When, FloatField, ExpressionWrapper
 from django.shortcuts import render, redirect
 from .form_statics import IngredientForm, Receipe_IngredientForm, ReceipeForm, AllergenForm
 from .forms import ConfirmDeleteForm
@@ -10,7 +10,19 @@ from .helpers import prepareContext
 @login_required
 def list_receipes(request):
 	context = prepareContext(request)
-	context['receipe_list'] = Receipe.objects.all()
+	context['receipe_list'] = Receipe.objects.all().annotate(
+		my_price = Case(
+			When(receipe_ingredient__measurement = F('ingredients__buying_measurement'),
+				then=F('receipe_ingredient__amount') / F('ingredients__buying_quantity') * F('ingredients__price')),
+			When(receipe_ingredient__measurement = F('ingredients__calculation_measurement'),
+				then=F('receipe_ingredient__amount') / F('ingredients__calculation_quantity') * F('ingredients__price')),
+			default=0,
+			output_field=FloatField()),
+		).annotate(
+			total_price=Sum(F('my_price'), output_field=FloatField()),
+		).annotate(
+			price_per_person=ExpressionWrapper(F('total_price')/F('default_person_count'), output_field=FloatField()),
+		)
 	context['pagetitle'] = 'Receipes'
 	return render(request, 'listings/receipes.html', context)
 
