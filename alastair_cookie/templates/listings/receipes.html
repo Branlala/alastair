@@ -7,6 +7,7 @@
 		<tr>
 			<th>Name</th>
 			<th>Default Person Count</th>
+			<th>Price per person</th>
 			<th></th>
 		</tr>
 		</thead>
@@ -15,6 +16,7 @@
 			<tr class="{% cycle 'odd' 'even' %}">
 				<td><a href="{% url "cooking:receipes" rec.id %}">{{ rec.name }}</a></td>
 				<td>{{ rec.default_person_count }}</td>
+				<td>{{ rec.price_per_person|floatformat:2 }}&euro;</td>
 				<td>
 					<a href="{% url "cooking:delreceipe" rec.id %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Delete receipe {{ rec.name }}"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span><span class="sr-only">Del</span></a>
 					<a href="{% url "cooking:editreceipe" rec.id %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Edit receipe {{ rec.name }}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span><span class="sr-only">Edit</span></a>
