@@ -2,6 +2,7 @@
 
 from django import forms
 from django.core.urlresolvers import reverse
+from django.db import models
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Button, Field, Hidden, HTML, Div
 from crispy_forms.bootstrap import FormActions, AppendedText, StrictButton,  InlineField
@@ -25,13 +26,7 @@ class ReceipeForm(forms.ModelForm):
 				HTML('<a href="' + reverse('cooking:receipes') + '" class="btn btn-default" role="button">Cancel</a>'),
 			),
 		)
-			
-	def clean_default_person_count(self):
-		if(int(self.cleaned_data.get('default_person_count')) > 0):
-			return self.cleaned_data.get('default_person_count')
-		else:
-			raise forms.ValidationError('Person count must be greater or equals 1')
-		
+
 	class Meta:
 		model = Receipe
 		exclude = ['id', 'ingredients']
@@ -73,8 +68,10 @@ class Receipe_IngredientForm(forms.ModelForm):
 			raise forms.ValidationError("Please use only measurements which are set in the ingredient either as calculation or buying measurement")
 		
 class IngredientForm(forms.ModelForm):
+	
 	def __init__(self, *args, **kwargs):
 		super(IngredientForm, self).__init__(*args, **kwargs)
+		self.fields['cooked_weight'].required = False
 		self.helper = FormHelper()
 		self.helper.form_class = 'form-horizontal'
 		self.helper.form_method = 'post'
@@ -87,6 +84,7 @@ class IngredientForm(forms.ModelForm):
 			Field('buying_measurement'),
 			Field('calculation_quantity'),
 			Field('calculation_measurement'),
+			AppendedText('cooked_weight', 'gram'),
 			AppendedText('price', '€'),
 			Field('cheapest_store'),
 			Field('remarks'),
@@ -121,6 +119,11 @@ class IngredientForm(forms.ModelForm):
 		else:
 			return self.cleaned_data.get('calculation_measurement')
 
+	def clean_cooked_weight(self):
+		if(self.cleaned_data.get('cooked_weight') == None):
+			self.cleaned_data['cooked_weight'] = 0
+		return self.cleaned_data.get('cooked_weight')
+	
 	class Meta:
 		model = Ingredient
 		exclude = ['id']

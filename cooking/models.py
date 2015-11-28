@@ -1,10 +1,14 @@
 
-
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Sum
 from django.utils.encoding import python_2_unicode_compatible
 import decimal
 
+def validate_positive(value):
+	if(value < 0):
+		raise ValidationError('Please enter a positive value', code='negative-value')
 
 MEASUREMENTS = (
 	('ml', 'Milliliter'),
@@ -24,15 +28,16 @@ class Allergen(models.Model):
 @python_2_unicode_compatible
 class Ingredient(models.Model):
 	name = models.CharField(max_length=256)
-	buying_quantity = models.FloatField()
+	buying_quantity = models.FloatField(validators=[validate_positive])
 	buying_measurement = models.CharField(max_length=2, choices=MEASUREMENTS)
-	calculation_quantity = models.FloatField(blank=True, null=True)
-	calculation_measurement = models.CharField(max_length=2, choices=MEASUREMENTS, blank=True, null=True)
-	price = models.DecimalField(max_digits=8, decimal_places=2)
+	calculation_quantity = models.FloatField(blank=True, null=True, validators=[validate_positive])
+	calculation_measurement = models.CharField(max_length=2, choices=MEASUREMENTS, blank=True, null=True)	
+	price = models.DecimalField(max_digits=8, decimal_places=2, validators=[validate_positive])
 	cheapest_store = models.CharField(max_length=256, blank=True)
 	remarks = models.CharField(max_length=256, blank=True)
 	allergens = models.ManyToManyField(Allergen, blank=True)
-	
+	cooked_weight = models.FloatField(default=0, validators=[validate_positive])
+
 	def __str__(self):
 		return self.name
 	
@@ -42,7 +47,7 @@ class Ingredient(models.Model):
 @python_2_unicode_compatible
 class Receipe(models.Model):
 	name = models.CharField(max_length=256)
-	default_person_count = models.IntegerField(default=1)
+	default_person_count = models.IntegerField(default=1, validators=[MinValueValidator(1)])
 	instructions = models.TextField()
 	ingredients = models.ManyToManyField(Ingredient, through='Receipe_Ingredient')
 	def __str__(self):
@@ -67,7 +72,7 @@ class Project_Readonly(models.Model):
 	name = models.CharField(max_length=256)
 	start_date = models.DateField(blank=True, null=True)
 	end_date = models.DateField(blank=True, null=True)
-	price = models.FloatField()
+	price = models.FloatField(validators=[validate_positive])
 	
 	def __str__(self):
 		return self.name
@@ -97,7 +102,7 @@ class Meal(models.Model):
 class Inventory_Item(models.Model):
 	project = models.ForeignKey(Project)
 	ingredient = models.ForeignKey(Ingredient)
-	amount = models.FloatField()
+	amount = models.FloatField(validators=[validate_positive])
 	measurement = models.CharField(max_length=2, choices=MEASUREMENTS)
 	remarks = models.CharField(max_length=256, blank=True)
 
@@ -114,7 +119,7 @@ class Inventory_Item(models.Model):
 class Receipe_Ingredient(models.Model):
 	receipe = models.ForeignKey(Receipe)
 	ingredient = models.ForeignKey(Ingredient)
-	amount = models.FloatField()
+	amount = models.FloatField(validators=[validate_positive])
 	measurement = models.CharField(max_length=2, choices=MEASUREMENTS)
 	remarks = models.CharField(max_length=256, blank=True)
 	
@@ -129,7 +134,7 @@ class Receipe_Ingredient(models.Model):
 class Meal_Receipe(models.Model):
 	meal = models.ForeignKey(Meal)
 	receipe = models.ForeignKey(Receipe)
-	person_count = models.IntegerField()
+	person_count = models.IntegerField(validators=[validate_positive])
 	remarks = models.CharField(max_length=256, blank=True)
 	
 	def __str__(self):
