@@ -213,7 +213,7 @@ def subtract_inventory(proj, shopping_list):
 		for inv in (x for x in inventory if x.ingredient.id == item.id):
 			# Subtract the buying count
 			item.exact_buying_count -= inv.exact_buying_count
-			print('Subtracting ' + str(inv.amount) + inv.measurement + ' from ' + item.name)
+			#print('Subtracting ' + str(inv.amount) + inv.measurement + ' from ' + item.name)
 			#inventory.remove(inv) # for optimization remove this element
 
 			# Recalculate all the other properties
