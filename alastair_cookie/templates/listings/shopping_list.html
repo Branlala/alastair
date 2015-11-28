@@ -16,13 +16,13 @@
 		</thead>
 		<tbody>
 		{% for ing in shopping_list %}
-			{% if ing.exact_amount > 0 %}
+			<!-- if ing.exact_amount > 0 -->
 				<tr class="{% cycle 'odd' 'even' %}">
 					<td>{{ ing.first_occurrence|date:"d.M" }}</td>
 					<td><a href="{% url 'cooking:ingredients' ing.id %}" data-toggle="tooltip" title="Price per Unit: {{ ing.price }}&euro; for {% if ing.buying_measurement == 'n' %}{{ ing.buying_quantity|floatformat }} piece{{ ing.buying_quantity|pluralize }}{% else %}{{ ing.buying_quantity|floatformat }}{{ ing.buying_measurement }}{% endif %}{% if ing.calculation_measurement %} or {% if ing.calculation_measurement == 'n' %}{{ ing.calculation_quantity|floatformat }} piece{{ ing.calculation_quantity|pluralize }}{% else %}{{ ing.calculation_quantity|floatformat }}{{ ing.calculation_measurement }}{% endif %}{% endif %}">{{ ing.name }}</a></td>
 					
 					{% if ing.buying_measurement == 'n' %}
-					<td>{{ ing.exact_amount|floatformat }} piece{{ ing.buying_quantity|pluralize }}
+					<td>{{ ing.exact_amount|floatformat }} piece{{ ing.exact_amount|pluralize }}
 					{% else %}
 					<td>{{ ing.exact_amount|floatformat }}{{ ing.buying_measurement }}
 					{% endif %}
@@ -40,7 +40,7 @@
 					
 					
 					{% if ing.buying_measurement == 'n' %}
-					<td>{{ ing.effective_amount|floatformat }} piece{{ ing.buying_quantity|pluralize }}
+					<td>{{ ing.effective_amount|floatformat }} piece{{ ing.effective_amount|pluralize }}
 					{% else %}
 					<td>{{ ing.effective_amount|floatformat }}{{ ing.buying_measurement }}
 					{% endif %}
@@ -61,7 +61,7 @@
 					
 					<td>{{ ing.effective_price|floatformat:2 }}&euro;</td>
 				</tr>
-			{% endif %}
+			<!-- endif -->
 		{% endfor %}
 		<tr>
 			<td>Total</td><td></td><td></td>
@@ -70,6 +70,12 @@
 		</tr>
 		</tbody>
 	</table>
+	
+	{% if inventory_active %}
+	<a href="{{ request.path|urlencode }}?deactivate_inventory" class="btn btn-danger" data-toggle="tooltip" title="Deactivate Inventory to see the full list of ingredients and the total price at the shopping list page">Deactivate Inventory</a>
+	{% else %}
+	<a href="{{ request.path|urlencode }}?activate_inventory" class="btn btn-success" data-toggle="tooltip" title="Activate Inventory to have the real shopping list and the still to pay prices at the shopping list page">Activate Inventory</a>
+	{% endif %}
 	
 	{% if inventory_active %}
 	<a href="{{ request.path|urlencode }}?send_to_inventory" class="btn btn-default" data-toggle="tooltip" title="Send all items on shopping list to Inventory">Send all to Inventory</a>

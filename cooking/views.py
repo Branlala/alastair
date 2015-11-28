@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.template.defaulttags import register
 from .models import Project, Meal, Project_Readonly, Meal_Receipe, Receipe, Inventory_Item, Allergen
 from .forms import ProjectForm, MealForm, ConfirmDeleteForm, Meal_ReceipeForm, Inventory_ItemForm
-from .helpers import prepareContext, add_to_inventory, meal_shopping_list, project_shopping_list_data, inventory_data
+from .helpers import prepareContext, add_to_inventory, meal_shopping_list, project_shopping_list_data, inventory_data, subtract_inventory
 
 
 def hello(request):
@@ -197,17 +197,26 @@ def project_shopping_list(request):
 	context = prepareContext(request)
 	if('active_project' not in context):
 		return redirect('cooking:projects')
-	if('inventory_active' not in request.session):
+	
+	if('activate_inventory' in request.GET):
 		request.session['inventory_active'] = True
+	elif('deactivate_inventory' in request.GET):
+		request.session['inventory_active'] = False
+	elif('inventory_active' not in request.session):
+		request.session['inventory_active'] = True
+		
 	if(request.session['inventory_active']):
 		if('send_to_inventory' in request.GET):
-			sl = project_shopping_list_data(context['active_project'], True)
+			sl = project_shopping_list_data(context['active_project'])
+			sl = subtract_inventory(context['active_project'], sl)
 			for item in sl:
 				add_to_inventory(context['active_project'], item)
 		
-	context['shopping_list'] = project_shopping_list_data(context['active_project'], request.session['inventory_active'])
+	context['shopping_list'] = project_shopping_list_data(context['active_project'])
+	if(request.session['inventory_active']):
+		context['shopping_list'] = subtract_inventory(context['active_project'], context['shopping_list'])
 	#context['total_exact_price'] = context['shopping_list'].aggregate(tp=Sum('exact_price')).get('tp')
-	context['total_effective_price'] = context['shopping_list'].aggregate(tp=Sum('effective_price')).get('tp')
+	context['total_effective_price'] = sum([float(x.effective_price) for x in context['shopping_list']])
 	context['pagetitle'] = 'Shopping List'
 	context['inventory_active'] = request.session['inventory_active']
 	return render(request, 'listings/shopping_list.html', context)
