@@ -30,12 +30,12 @@
 				
 				<td>{{ rec.remarks }}</td>
 				
-				<td>
+				<td><span class="text-nowrap">
 					<a href="{{ request.path|urlencode }}?remove_meal_receipe={{ rec.id }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span><span class="sr-only">Del</span></a>
 					<a href="{% url "cooking:receipes" rec.receipe.id %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="View and edit ingredients of receipe {{ rec.receipe.name }}"><span class="glyphicon glyphicon-list" aria-hidden="true"></span><span class="sr-only">Info</span></a>
 					<a href="{% url 'cooking:meals' meal.id rec.receipe.id %}" class="btn btn-default btn-sm" data-toggle="tooltip" title="View a shopping list of only this receipe"><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span><span class="sr-only">Info</span></a>
 					
-				</td>
+				</span></td>
 			</tr>		
 		{% endfor %}
 		<tr>
