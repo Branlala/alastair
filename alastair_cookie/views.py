@@ -6,6 +6,11 @@ def home(request):
 	context['pagetitle'] = 'Home'
 	return render(request, 'single/home.html', context)
 
+def tutorial(request):
+	context = {}
+	context['pagetitle'] = 'Help'
+	return render(request, 'single/help.html', context)
+
 def impressum(request):
 	context = {}
 	context['pagetitle'] = 'Impressum'

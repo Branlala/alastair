@@ -9,7 +9,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
+    <!--link rel="icon" href="../../favicon.ico"-->
 
     <title>{% block title_block %}{{ pagetitle }} - Alastair{% endblock %}</title>
 
@@ -53,7 +53,7 @@
 						
 			{% block extra_nav_block %} 
 			<li class="dropdown">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ pagetitle }} <span class="caret"></span></a>
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Cooking <span class="caret"></span></a>
 				<ul class="dropdown-menu">
 					{% if active_page == "projects" %}
 						<li class="active"><a href="{% url 'cooking:projects' %}">Overview <span class="sr-only">(current)</span></a></li>
@@ -115,6 +115,7 @@
 			{% else %}
 			<li><a href="{% url 'login' %}">Login</a></li>
 			{% endif %}
+			<li><a href="{% url 'help' %}">Help</a></li>
             <li><a href="{% url 'impressum' %}">Impressum</a></li>
           </ul>
         </div>

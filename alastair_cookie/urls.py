@@ -18,12 +18,13 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from .views import home, impressum, logout_view
+from .views import home, impressum, logout_view, tutorial
 from .forms import MyLoginForm, MyPasswordChangeForm
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls), name='admin'),
     url(r'^home/$', home, name='home'),
+    url(r'^help/$', tutorial, name='help'),
     url(r'^impressum/$', impressum, name='impressum'),
     url(r'^login/$', auth_views.login, {'authentication_form':MyLoginForm, 'extra_context':{'heading':'Login', 'pagetitle':'Login'}}),
     url(r'^password_change/$', auth_views.password_change, {'template_name':'registration/login.html', 'post_change_redirect':'/password_change/done/', 'password_change_form':MyPasswordChangeForm, 'extra_context':{'heading':'Change Password', 'pagetitle':'Change Password'}}),
