@@ -26,15 +26,17 @@ a:hover {
 
 html,
 body {
-  height: 100%;
-  /*background: #333 url("../img/lake.jpg") no-repeat;*/
-  background: #333;
+  height: 100%;  
+}
+html{
+  background: #333  url("../img/lake.jpg") no-repeat;
   background-size: cover;
 }
 body {
   color: #fff;
   text-align: center;
   text-shadow: 0 1px 3px rgba(0,0,0,.5);
+  background: rgba(0, 0, 0, .4);
 }
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
