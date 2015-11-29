@@ -5,24 +5,12 @@ from django.shortcuts import render, redirect
 from .form_statics import IngredientForm, Receipe_IngredientForm, ReceipeForm, AllergenForm
 from .forms import ConfirmDeleteForm
 from .models import Ingredient, Allergen, Receipe, Receipe_Ingredient
-from .helpers import prepareContext
+from .helpers import prepareContext, receipe_data
 
 @login_required
 def list_receipes(request):
 	context = prepareContext(request)
-	context['receipe_list'] = Receipe.objects.all().annotate(
-		my_price = Case(
-			When(receipe_ingredient__measurement = F('ingredients__buying_measurement'),
-				then=F('receipe_ingredient__amount') / F('ingredients__buying_quantity') * F('ingredients__price')),
-			When(receipe_ingredient__measurement = F('ingredients__calculation_measurement'),
-				then=F('receipe_ingredient__amount') / F('ingredients__calculation_quantity') * F('ingredients__price')),
-			default=0,
-			output_field=FloatField()),
-		).annotate(
-			total_price=Sum(F('my_price'), output_field=FloatField()),
-		).annotate(
-			price_per_person=ExpressionWrapper(F('total_price')/F('default_person_count'), output_field=FloatField()),
-		)
+	context['receipe_list'] = receipe_data()
 	context['pagetitle'] = 'Receipes'
 	return render(request, 'listings/receipes.html', context)
 
@@ -84,7 +72,7 @@ def list_receipe_ingredient(request, active_receipe):
 		except:
 			pass
 	
-	rec = Receipe.objects.get(id=active_receipe)
+	rec = receipe_data().get(id=active_receipe)
 	form = Receipe_IngredientForm(request.POST or None)
 	if(form.is_valid()):
 		obj = form.save(commit=False)
@@ -94,7 +82,10 @@ def list_receipe_ingredient(request, active_receipe):
 	
 	context['form'] = form
 	context['receipe'] = rec
-	context['receipe_ingredient_list'] = Receipe_Ingredient.objects.filter(receipe=rec)
+	context['receipe_ingredient_list'] = Receipe_Ingredient.objects.filter(receipe=rec).annotate(
+			price_per_person=ExpressionWrapper(F('ingredient__price')/F('receipe__default_person_count'), output_field=FloatField()),
+			weight_per_person=ExpressionWrapper(F('ingredient__cooked_weight')/F('receipe__default_person_count'), output_field=FloatField()),
+		)
 	context['allergen_list'] = Allergen.objects.filter(ingredient__receipe=rec).distinct()
 	for allergen in context['allergen_list']:
 		allergen.used_in = ', '.join([x.name for x in allergen.ingredient_set.filter(receipe=rec)])

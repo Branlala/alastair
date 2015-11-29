@@ -18,6 +18,8 @@
 		<tr>
 			<th>Name</th>
 			<th>Amount</th>
+			<th>Price per Person</th>
+			<th>Weight per Person</th>
 			<th>Remarks</th>
 			<th></th>
 		</tr>
@@ -33,6 +35,9 @@
 				<td>{{ rec.amount|floatformat }}{{ rec.measurement }}</td>
 				{% endif %}
 				
+				<td>{% if rec.price_per_person %}{{ rec.price_per_person|floatformat:2 }}&euro;{% endif %}</td>
+				<td>{% if rec.weight_per_person %}{{ rec.weight_per_person|floatformat }} gram {% endif %}</td>
+				
 				<td>{{ rec.remarks }}</td>
 				
 				<td><a href="{{ request.path|urlencode }}?remove_receipe_ingredient={{ rec.id }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Remove ingredient {{ rec.ingredient.name }} from {{ receipe.name }}"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span><span class="sr-only">Del</span></a></td>
@@ -47,18 +52,24 @@
 	</table>
 </div>
 
-<h2 class="sub-header">Instructions for {{ receipe.name }} ({{ receipe.default_person_count }} pers)</h2>
+<h2 class="sub-header">Instructions</h2>
 <div class="well">
   {{ receipe.instructions }}
 </div>
 
-<h2 class="sub-header">Allergens in {{ receipe.name }}</h2>
+<h2 class="sub-header">Other Information</h2>
 <ul>
-	{% for allergen in allergen_list %}
-		<li>{{ allergen.name }} ({{ allergen.used_in }})</li>
-	{% empty %}
-		<li>No allergens in this receipe!</li>
-	{% endfor %}
+	{% if receipe.price_per_person %}<li>Price per Person: {{ receipe.price_per_person|floatformat:2 }}&euro;</li>{% endif %}
+	{% if receipe.weight_per_person %}<li>Weight per Person: {{ receipe.weight_per_person|floatformat }} gram </li>{% endif %}
+	{% if allergen_list %}<li>Allergens:
+		<ul>
+		{% for allergen in allergen_list %}
+			<li>{{ allergen.name }} ({{ allergen.used_in }})</li>
+		{% endfor %}
+		</ul>
+	</li>
+	{% else %}
+	<li> No allergens in this receipe!</li>
+	{% endif %}
 </ul>
-
 {% endblock %}

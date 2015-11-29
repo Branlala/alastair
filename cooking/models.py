@@ -9,6 +9,10 @@ import decimal
 def validate_positive(value):
 	if(value < 0):
 		raise ValidationError('Please enter a positive value', code='negative-value')
+	
+def validate_greater_zero(value):
+	if(value <= 0):
+		raise ValidationError('Please enter a value greater than zero', code='not-zero')
 
 MEASUREMENTS = (
 	('ml', 'Milliliter'),
@@ -28,9 +32,9 @@ class Allergen(models.Model):
 @python_2_unicode_compatible
 class Ingredient(models.Model):
 	name = models.CharField(max_length=256)
-	buying_quantity = models.FloatField(validators=[validate_positive])
+	buying_quantity = models.FloatField(validators=[validate_greater_zero])
 	buying_measurement = models.CharField(max_length=2, choices=MEASUREMENTS)
-	calculation_quantity = models.FloatField(blank=True, null=True, validators=[validate_positive])
+	calculation_quantity = models.FloatField(blank=True, null=True, validators=[validate_greater_zero])
 	calculation_measurement = models.CharField(max_length=2, choices=MEASUREMENTS, blank=True, null=True)	
 	price = models.DecimalField(max_digits=8, decimal_places=2, validators=[validate_positive])
 	cheapest_store = models.CharField(max_length=256, blank=True)
@@ -134,7 +138,7 @@ class Receipe_Ingredient(models.Model):
 class Meal_Receipe(models.Model):
 	meal = models.ForeignKey(Meal)
 	receipe = models.ForeignKey(Receipe)
-	person_count = models.IntegerField(validators=[validate_positive])
+	person_count = models.IntegerField(validators=[validate_greater_zero])
 	remarks = models.CharField(max_length=256, blank=True)
 	
 	def __str__(self):

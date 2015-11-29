@@ -3,7 +3,7 @@ import math
 from django.core.urlresolvers import resolve
 from django.db.models import F, ExpressionWrapper, FloatField, IntegerField, CharField, Case, When, Sum, Func, Min, Q
 from django.template.defaulttags import register
-from .models import Project, Ingredient, Inventory_Item, MEASUREMENTS
+from .models import Project, Ingredient, Inventory_Item, MEASUREMENTS, Receipe
 
 @register.filter(name='get_item')
 def get_item(dictionary, key):
@@ -52,9 +52,7 @@ def meal_shopping_list(meal, receipe):
 			default=None,
 			output_field=FloatField()),
 		)
-	
 
-	
 def project_shopping_list_data(proj):
 	#if(inventory_active):
 		## qs1 is all the shopping list items that have an item in inventory (and already the amount subtracted)
@@ -264,7 +262,23 @@ def inventory_data(proj):
 				default=0,
 				output_field=FloatField()),
 		)
-	
+
+def receipe_data() :
+	return Receipe.objects.all().annotate(
+		my_price = Case(
+			When(receipe_ingredient__measurement = F('ingredients__buying_measurement'),
+				then=F('receipe_ingredient__amount') / F('ingredients__buying_quantity') * F('ingredients__price')),
+			When(receipe_ingredient__measurement = F('ingredients__calculation_measurement'),
+				then=F('receipe_ingredient__amount') / F('ingredients__calculation_quantity') * F('ingredients__price')),
+			default=0,
+			output_field=FloatField()),
+		).annotate(
+			total_weight=Sum('ingredients__cooked_weight', output_field=FloatField()),
+			total_price=Sum(F('my_price'), output_field=FloatField()),
+		).annotate(
+			price_per_person=ExpressionWrapper(F('total_price')/F('default_person_count'), output_field=FloatField()),
+			weight_per_person=ExpressionWrapper(F('total_weight')/F('default_person_count'), output_field=FloatField()),
+		)
 
 def prepareContext(request):
 	context = {}
