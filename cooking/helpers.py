@@ -224,7 +224,7 @@ def subtract_inventory(proj, shopping_list):
 			item.effective_amount = item.buying_count * item.buying_quantity
 			if(item.calculation_measurement):
 				item.effective_calculation_amount = item.buying_count * item.calculation_quantity
-			item.effective_price = item.buying_count * item.price
+			item.effective_price = item.buying_count * float(item.price)
 				
 	return [x for x in sl if x.exact_buying_count > 0.000001]
 
@@ -265,15 +265,17 @@ def inventory_data(proj):
 
 def receipe_data() :
 	return Receipe.objects.all().annotate(
-		my_price = Case(
-			When(receipe_ingredient__measurement = F('ingredients__buying_measurement'),
-				then=F('receipe_ingredient__amount') / F('ingredients__buying_quantity') * F('ingredients__price')),
-			When(receipe_ingredient__measurement = F('ingredients__calculation_measurement'),
-				then=F('receipe_ingredient__amount') / F('ingredients__calculation_quantity') * F('ingredients__price')),
-			default=0,
-			output_field=FloatField()),
+		my_usage_count=Case(
+				When(receipe_ingredient__measurement=F('ingredients__calculation_measurement'), then=F('receipe_ingredient__amount')/F('ingredients__calculation_quantity')),
+				When(receipe_ingredient__measurement=F('ingredients__buying_measurement'), then=F('receipe_ingredient__amount')/F('ingredients__buying_quantity')),
+				default=0,
+				output_field=FloatField()
+				),
 		).annotate(
-			total_weight=Sum('ingredients__cooked_weight', output_field=FloatField()),
+			my_price = ExpressionWrapper(F('my_usage_count') * F('ingredients__price'), output_field=FloatField()),
+			my_weight = ExpressionWrapper(F('my_usage_count') * F('ingredients__cooked_weight'), output_field=FloatField()),
+		).annotate(
+			total_weight=Sum(F('my_weight'), output_field=FloatField()),
 			total_price=Sum(F('my_price'), output_field=FloatField()),
 		).annotate(
 			price_per_person=ExpressionWrapper(F('total_price')/F('default_person_count'), output_field=FloatField()),

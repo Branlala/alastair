@@ -54,6 +54,8 @@ class Receipe(models.Model):
 	default_person_count = models.IntegerField(default=1, validators=[MinValueValidator(1)])
 	instructions = models.TextField()
 	ingredients = models.ManyToManyField(Ingredient, through='Receipe_Ingredient')
+	rewrite_weight_per_person = models.FloatField(blank=True, null=True)
+	
 	def __str__(self):
 		return self.name
 	

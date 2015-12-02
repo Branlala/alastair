@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from .dbsettings import database_settings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -76,15 +77,15 @@ WSGI_APPLICATION = 'alastair_cookie.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'alastair_cookie',
-        'USER' : 'django',
-        'PASSWORD' : 'YNWQQfJynKZ3sjhQ',
-    }
-}
-
+try:
+	DATABASES = database_settings()
+except:
+	DATABASES = {
+		'default': {
+			'ENGINE': 'django.db.backends.sqlite3',
+			'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+		}
+	}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
