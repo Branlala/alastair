@@ -28,29 +28,26 @@ def add_to_inventory(proj, item):
 
 def meal_shopping_list(meal, receipe):
 	return Ingredient.objects.filter(receipe=receipe, receipe__meal=meal).annotate(
+			usage_count=Case(
+				When(buying_measurement=F('receipe_ingredient__measurement'),
+					then=((F('receipe_ingredient__amount') / F('buying_quantity')) / F('receipe__default_person_count')) * F('receipe__meal_receipe__person_count')),
+				When(calculation_measurement=F('receipe_ingredient__measurement'),
+					then=((F('receipe_ingredient__amount') / F('calculation_quantity')) / F('receipe__default_person_count')) * F('receipe__meal_receipe__person_count')),
+				default=0,
+				output_field=FloatField()),
+		).annotate(
 		# Copy ri.measurement for easier access
 		measurement=F('receipe_ingredient__measurement'),
 		# Also copy ri.remarks for easier access
 		mr_remarks=F('receipe_ingredient__remarks'),
-		# Exact price = (mr.person_count / r.default_person_count) * i.price
-		exact_price=ExpressionWrapper((F('receipe__meal_receipe__person_count') / F('receipe__default_person_count')) * F('price'), output_field=FloatField()),
-		
-		exact_amount=Case(
-			When(buying_measurement=F('receipe_ingredient__measurement'),
-				 then=(F('receipe_ingredient__amount') / F('receipe__default_person_count')) * F('receipe__meal_receipe__person_count')),
-			When(calculation_measurement=F('receipe_ingredient__measurement'),
-				 then=(((F('receipe_ingredient__amount') / F('calculation_quantity')) * F('buying_quantity')) / F('receipe__default_person_count')) * F('receipe__meal_receipe__person_count')),
-			default=0,
-			output_field=FloatField()),
+		exact_amount=F('usage_count') * F('buying_quantity'),
 		exact_calculation_amount=Case(
 			When(calculation_measurement__isnull=True,
 				 then=None),
-			When(buying_measurement=F('receipe_ingredient__measurement'),
-				 then=(((F('receipe_ingredient__amount') / F('buying_quantity')) * F('calculation_quantity')) / F('receipe__default_person_count')) * F('receipe__meal_receipe__person_count')),
-			When(calculation_measurement=F('receipe_ingredient__measurement'),
-				 then=(F('receipe_ingredient__amount') / F('receipe__default_person_count')) * F('receipe__meal_receipe__person_count')),
-			default=None,
+			default=F('usage_count') * F('calculation_quantity'),
 			output_field=FloatField()),
+		exact_price=ExpressionWrapper(F('usage_count') * F('price'), output_field=FloatField()),	
+
 		)
 
 def project_shopping_list_data(proj):

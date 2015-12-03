@@ -51,7 +51,7 @@ class Ingredient(models.Model):
 @python_2_unicode_compatible
 class Receipe(models.Model):
 	name = models.CharField(max_length=256)
-	default_person_count = models.IntegerField(default=1, validators=[MinValueValidator(1)])
+	default_person_count = models.IntegerField(default=1, validators=[validate_greater_zero])
 	instructions = models.TextField()
 	ingredients = models.ManyToManyField(Ingredient, through='Receipe_Ingredient')
 	rewrite_weight_per_person = models.FloatField(blank=True, null=True)

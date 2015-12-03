@@ -90,7 +90,7 @@ def list_receipe_ingredient(request, active_receipe):
 				output_field=FloatField()
 				)
 		).annotate(
-			price_per_person=ExpressionWrapper((F('usage_count') * F('ingredient__price'))/rec.default_person_count, output_field=FloatField()),
+			price_per_person=ExpressionWrapper((F('usage_count') * F('ingredient__price'))/F('receipe__default_person_count'), output_field=FloatField()),
 			weight_per_person=ExpressionWrapper((F('usage_count') * F('ingredient__cooked_weight'))/F('receipe__default_person_count'), output_field=FloatField()),
 		)
 	context['allergen_list'] = Allergen.objects.filter(ingredient__receipe=rec).distinct()
