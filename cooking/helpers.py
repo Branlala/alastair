@@ -3,7 +3,7 @@ import math
 from django.core.urlresolvers import resolve
 from django.db.models import F, ExpressionWrapper, FloatField, IntegerField, CharField, Case, When, Sum, Func, Min, Q
 from django.template.defaulttags import register
-from .models import Project, Ingredient, Inventory_Item, MEASUREMENTS, Receipe
+from .models import Project, Ingredient, Inventory_Item, MEASUREMENTS, Receipe, Meal_Receipe
 
 @register.filter(name='get_item')
 def get_item(dictionary, key):
@@ -25,6 +25,25 @@ def add_to_inventory(proj, item):
 		
 	inv.amount += amount
 	inv.save()
+	
+def meal_receipe_data(m):
+	return Meal_Receipe.objects.filter(meal=m).annotate(
+		my_usage_count=Case(
+				When(receipe__receipe_ingredient__measurement=F('receipe__ingredients__calculation_measurement'), then=F('receipe__receipe_ingredient__amount')/F('receipe__ingredients__calculation_quantity')),
+				When(receipe__receipe_ingredient__measurement=F('receipe__ingredients__buying_measurement'), then=F('receipe__receipe_ingredient__amount')/F('receipe__ingredients__buying_quantity')),
+				default=0,
+				output_field=FloatField()
+				),
+		).annotate(
+			my_price = ExpressionWrapper(F('my_usage_count') * F('receipe__ingredients__price'), output_field=FloatField()),
+			my_weight = ExpressionWrapper(F('my_usage_count') * F('receipe__ingredients__cooked_weight'), output_field=FloatField()),
+		).annotate(
+			total_weight=Sum(F('my_weight'), output_field=FloatField()),
+			total_price=Sum(F('my_price'), output_field=FloatField()),
+		).annotate(
+			price_per_person=ExpressionWrapper(F('total_price')/F('receipe__default_person_count'), output_field=FloatField()),
+			weight_per_person=ExpressionWrapper(F('total_weight')/F('receipe__default_person_count'), output_field=FloatField()),
+		)
 
 def meal_shopping_list(meal, receipe):
 	return Ingredient.objects.filter(receipe=receipe, receipe__meal=meal).annotate(

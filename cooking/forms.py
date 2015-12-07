@@ -81,7 +81,7 @@ class Meal_ReceipeForm(forms.ModelForm):
 			InlineField('receipe'), 
 			HTML('</td><td>'),
 			InlineField('person_count'),
-			HTML('</td><td>'),
+			HTML('</td><td></td><td></td><td>'),
 			InlineField('remarks'),
 			HTML('</td><td>'),
 			StrictButton('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span><span class="sr-only">Add</span>', type='submit', css_class='btn btn-default btn-sm'),

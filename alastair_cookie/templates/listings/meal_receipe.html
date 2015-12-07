@@ -17,6 +17,8 @@
 		<tr>
 			<th>Receipe</th>
 			<th>Person Count</th>
+			<th>Price per Person</th>
+			<th>Weight per Person</th>
 			<th>Remarks</th>
 			<th></th>
 		</tr>
@@ -27,6 +29,10 @@
 				<td><a href="{% url 'cooking:meals' meal.id rec.receipe.id %}">{{ rec.receipe.name }}</a></td>
 				
 				<td>{{ rec.person_count }}</td>
+				
+				<td>{% if rec.price_per_person %}{{ rec.price_per_person|floatformat:2 }}&euro;{% endif %}</td>
+				
+				<td>{% if rec.weight_per_person %}{{ rec.weight_per_person|floatformat }} gram{% endif %}</td>
 				
 				<td>{{ rec.remarks }}</td>
 				

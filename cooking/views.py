@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.template.defaulttags import register
 from .models import Project, Meal, Project_Readonly, Meal_Receipe, Receipe, Inventory_Item, Allergen
 from .forms import ProjectForm, MealForm, ConfirmDeleteForm, Meal_ReceipeForm, Inventory_ItemForm
-from .helpers import prepareContext, add_to_inventory, meal_shopping_list, project_shopping_list_data, inventory_data, subtract_inventory
+from .helpers import prepareContext, add_to_inventory, meal_shopping_list, project_shopping_list_data, inventory_data, subtract_inventory, meal_receipe_data
 
 
 def hello(request):
@@ -150,7 +150,7 @@ def list_meal_receipe(request, meal):
 	
 	context['form'] = form
 	context['meal'] = m
-	context['meal_receipe_list'] = Meal_Receipe.objects.filter(meal=m)
+	context['meal_receipe_list'] = meal_receipe_data(m)
 	context['pagetitle'] = 'Receipes in Meal'
 	return render(request, 'listings/meal_receipe.html', context)
 
