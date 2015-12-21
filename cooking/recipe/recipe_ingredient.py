@@ -9,7 +9,8 @@ from django.db.models import F, ExpressionWrapper, FloatField, IntegerField, Cha
 from django.shortcuts import render, redirect
 from django.utils.encoding import python_2_unicode_compatible
 from cooking.helpers import prepareContext
-from cooking.models import Receipe_Ingredient
+from cooking.models import Receipe_Ingredient, Allergen
+from .recipe import receipe_data
 
 
 class Receipe_IngredientForm(forms.ModelForm):

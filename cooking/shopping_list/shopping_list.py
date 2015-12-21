@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 from django.utils.encoding import python_2_unicode_compatible
 from cooking.helpers import prepareContext
 from cooking.models import Ingredient
-from cooking.inventory.inventory import inventory_data
+from cooking.inventory.inventory import inventory_data, add_to_inventory
 
 def project_shopping_list_data(proj):
 		return Ingredient.objects.filter(receipe__meal__project=proj).annotate(
