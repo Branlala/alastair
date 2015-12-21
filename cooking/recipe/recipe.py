@@ -8,22 +8,33 @@ from django.db import models
 from django.db.models import F, ExpressionWrapper, FloatField, IntegerField, CharField, Case, When, Sum, Func, Min, Q
 from django.shortcuts import render, redirect
 from django.utils.encoding import python_2_unicode_compatible
-from .helpers import prepareContext
+from cooking.helpers import prepareContext
+from cooking.models import Receipe
+from cooking.forms import ConfirmDeleteForm
 
-@python_2_unicode_compatible
-class Receipe(models.Model):
-	name = models.CharField(max_length=256)
-	default_person_count = models.IntegerField(default=1, validators=[validate_greater_zero])
-	instructions = models.TextField()
-	ingredients = models.ManyToManyField(Ingredient, through='Receipe_Ingredient')
-	rewrite_weight_per_person = models.FloatField(blank=True, null=True)
-	
-	def __str__(self):
-		return self.name
-	
+class ReceipeForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(ReceipeForm, self).__init__(*args, **kwargs)
+		self.helper = FormHelper()
+		self.helper.form_class = 'form-horizontal'
+		self.helper.form_method = 'post'
+		self.helper.form_action = ''
+		self.helper.label_class = 'col-lg-2'
+		self.helper.field_class = 'col-lg-4'
+		self.helper.layout = Layout(
+			'name',
+			'default_person_count',
+			'instructions',
+			FormActions(
+				Submit('save', 'Save changes'),
+				HTML('<a href="' + reverse('cooking:receipes') + '" class="btn btn-default" role="button">Cancel</a>'),
+			),
+		)
+
 	class Meta:
-		ordering = ['name']
-	
+		model = Receipe
+		exclude = ['id', 'ingredients']
+
 
 def receipe_data() :
 	return Receipe.objects.all().annotate(

@@ -8,17 +8,28 @@ from django.db import models
 from django.db.models import F, ExpressionWrapper, FloatField, IntegerField, CharField, Case, When, Sum, Func, Min, Q
 from django.shortcuts import render, redirect
 from django.utils.encoding import python_2_unicode_compatible
-from .helpers import prepareContext
+from cooking.helpers import prepareContext
+from cooking.models import Allergen
 
-
-@python_2_unicode_compatible
-class Allergen(models.Model):
-	name = models.CharField(max_length=256)
-	def __str__(self):
-		return self.name
-	
+class AllergenForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(AllergenForm, self).__init__(*args, **kwargs)
+		self.helper = FormHelper()
+		self.helper.form_class = 'form-inline'
+		self.helper.field_template = 'bootstrap3/layout/inline_field.html'
+		self.helper.form_method = 'post'
+		self.helper.form_action = ''
+		self.helper.layout = Layout(
+			HTML('<td>'),
+			InlineField('name'), 
+			HTML('</td><td>'),
+			StrictButton('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span><span class="sr-only">Add</span>', type='submit', css_class='btn btn-default btn-sm'),
+			HTML('</td>'),
+		)
+		
 	class Meta:
-		ordering = ['name']
+		model = Allergen
+		exclude = []
 		
 	
 @login_required

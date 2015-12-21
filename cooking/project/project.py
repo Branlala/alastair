@@ -9,18 +9,8 @@ from django.db.models import F, ExpressionWrapper, FloatField, IntegerField, Cha
 from django.shortcuts import render, redirect
 from django.utils.encoding import python_2_unicode_compatible
 from cooking.helpers import prepareContext
+from cooking.models import Project
 
-@python_2_unicode_compatible
-class Project(models.Model):
-	name = models.CharField(max_length=256)
-	start_date = models.DateField(blank=True, null=True)
-	end_date = models.DateField(blank=True, null=True)
-	def __str__(self):
-		return self.name
-	
-	class Meta:
-		ordering = ['start_date', 'name']
-		
 		
 class ProjectForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):

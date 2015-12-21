@@ -8,24 +8,47 @@ from django.db import models
 from django.db.models import F, ExpressionWrapper, FloatField, IntegerField, CharField, Case, When, Sum, Func, Min, Q
 from django.shortcuts import render, redirect
 from django.utils.encoding import python_2_unicode_compatible
-from .helpers import prepareContext
+from cooking.helpers import prepareContext
+from cooking.models import Receipe_Ingredient
 
 
-@python_2_unicode_compatible
-class Receipe_Ingredient(models.Model):
-	receipe = models.ForeignKey(Receipe)
-	ingredient = models.ForeignKey(Ingredient)
-	amount = models.FloatField(validators=[validate_positive])
-	measurement = models.CharField(max_length=2, choices=MEASUREMENTS)
-	remarks = models.CharField(max_length=256, blank=True)
-	
-	def __str__(self):
-		return u'%s - %s' % (self.receipe.name, self.ingredient.name)
+class Receipe_IngredientForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(Receipe_IngredientForm, self).__init__(*args, **kwargs)
+		self.helper = FormHelper()
+		self.helper.form_class = 'form-inline'
+		self.helper.field_template = 'bootstrap3/layout/inline_field.html'
+		self.helper.form_method = 'post'
+		self.helper.form_action = ''
+		self.helper.layout = Layout(
+			HTML('<td>'),
+			InlineField('ingredient', title='Name'), 
+			HTML('</td><td>'),
+			Div(
+				Div(InlineField('amount'), css_class='col-md-6'), 
+				Div(InlineField('measurement'), css_class='col-md-6'),
+				css_class='row'
+			),
+			HTML('</td><td></td><td></td><td>'),
+			InlineField('remarks'),
+			HTML('</td><td>'),
+			StrictButton('<span class="glyphicon glyphicon-plus" aria-hidden="true"></span><span class="sr-only">Add</span>', type='submit', css_class='btn btn-default btn-sm'),
+			HTML('</td>')
+			)
 	
 	class Meta:
-		ordering = ['receipe', 'ingredient']
+		model = Receipe_Ingredient
+		exclude = ['receipe']
 	
-	
+	def clean_measurement(self):
+		if(self.cleaned_data.get('ingredient') == None):
+			return self.cleaned_data.get('measurement')
+		if(self.cleaned_data.get('measurement') == self.cleaned_data.get('ingredient').buying_measurement or self.cleaned_data.get('measurement') == self.cleaned_data.get('ingredient').calculation_measurement):
+			return self.cleaned_data.get('measurement')
+		else:
+			raise forms.ValidationError("Please use only measurements which are set in the ingredient either as calculation or buying measurement")
+		
+
 
 @login_required
 def list_receipe_ingredient(request, active_receipe):

@@ -8,21 +8,9 @@ from django.db import models
 from django.db.models import F, ExpressionWrapper, FloatField, IntegerField, CharField, Case, When, Sum, Func, Min, Q
 from django.shortcuts import render, redirect
 from django.utils.encoding import python_2_unicode_compatible
-from .helpers import prepareContext
-
-@python_2_unicode_compatible
-class Meal(models.Model):
-	name = models.CharField(max_length=256)
-	time = models.DateTimeField(blank=True, null=True)
-	project = models.ForeignKey(Project)
-	used_receipes = models.ManyToManyField(Receipe, through='Meal_Receipe', blank=True)
-	
-	def __str__(self):
-		return self.name
-	
-	class Meta:
-		ordering = ['time', 'name']
-		
+from cooking.helpers import prepareContext
+from cooking.forms import ConfirmDeleteForm
+from cooking.models import Meal	
 		
 			
 class MealForm(forms.ModelForm):

@@ -8,25 +8,8 @@ from django.db import models
 from django.db.models import F, ExpressionWrapper, FloatField, IntegerField, CharField, Case, When, Sum, Func, Min, Q
 from django.shortcuts import render, redirect
 from django.utils.encoding import python_2_unicode_compatible
-from .helpers import prepareContext
-
-
-@python_2_unicode_compatible
-class Inventory_Item(models.Model):
-	project = models.ForeignKey(Project)
-	ingredient = models.ForeignKey(Ingredient)
-	amount = models.FloatField(validators=[validate_positive])
-	measurement = models.CharField(max_length=2, choices=MEASUREMENTS)
-	remarks = models.CharField(max_length=256, blank=True)
-
-	
-	def __str__(self):
-		return self.ingredient.name
-	
-	class Meta:
-		ordering = ['ingredient']
-		unique_together = ('project', 'ingredient',)
-	
+from cooking.helpers import prepareContext
+from cooking.models import Ingredient, Inventory_Item	
 		
 class Inventory_ItemForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):

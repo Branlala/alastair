@@ -8,20 +8,8 @@ from django.db import models
 from django.db.models import F, ExpressionWrapper, FloatField, IntegerField, CharField, Case, When, Sum, Func, Min, Q
 from django.shortcuts import render, redirect
 from django.utils.encoding import python_2_unicode_compatible
-from .helpers import prepareContext
-
-@python_2_unicode_compatible
-class Meal_Receipe(models.Model):
-	meal = models.ForeignKey(Meal)
-	receipe = models.ForeignKey(Receipe)
-	person_count = models.IntegerField(validators=[validate_greater_zero])
-	remarks = models.CharField(max_length=256, blank=True)
-	
-	def __str__(self):
-		return u'%s - %s' % (self.meal.name, self.receipe.name)
-	
-	class Meta:
-		ordering = ['meal', 'receipe']
+from cooking.helpers import prepareContext
+from cooking.models import Meal_Receipe, Ingredient, Meal
 
 		
 class Meal_ReceipeForm(forms.ModelForm):
