@@ -12,6 +12,7 @@
 			<th>Effective Amount</th>
 			<th>Remarks</th>
 			<th>Effective Price</th>			
+			<th>Send to Inventory</th>			
 		</tr>
 		</thead>
 		<tbody>
@@ -60,11 +61,15 @@
 					<td>{{ ing.remarks }}</td>
 					
 					<td>{{ ing.effective_price|floatformat:2 }}&euro;</td>
+					<td>{% if inventory_active %}
+					<a href="{{ request.path|urlencode }}?send_this_to_inventory&item_id={{ ing.id }}" class="btn btn-default" data-toggle="tooltip" title="Send item to Inventory">Send to Inventory</a>
+					{% endif %}
+					</td>
 				</tr>
 			<!-- endif -->
 		{% endfor %}
 		<tr>
-			<td>Total</td><td></td><td></td>
+			<td>Total</td><td></td><td></td><td></td>
 			<!--<td>exact price {{ total_exact_price|floatformat:2 }}€</td>--><td></td><td></td>
 			<td>{{ total_effective_price|floatformat:2 }}&euro;</td>
 		</tr>
